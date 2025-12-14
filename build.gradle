@@ -1,0 +1,102 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'com.riege.mc'
+version = '1.21.4'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // JLine 3 for beautiful terminal UI
+    implementation 'org.jline:jline:3.27.0'
+}
+
+application {
+    mainClass = 'Main'
+    // Enable native access for FFM API
+    applicationDefaultJvmArgs = ['--enable-native-access=ALL-UNNAMED', '--enable-preview']
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+    }
+}
+
+// Task to run the terminal
+tasks.register('runTerminal', JavaExec) {
+    group = 'application'
+    description = 'Run the Riege MC terminal'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'Main'
+    standardInput = System.in
+    jvmArgs '--enable-native-access=ALL-UNNAMED', '--enable-preview'
+
+    // Set library path for native ratatui library
+    def nativeLibPath = file('native').absolutePath
+    environment 'LD_LIBRARY_PATH', nativeLibPath
+    environment 'DYLD_LIBRARY_PATH', nativeLibPath  // macOS
+}
+
+// Java version configuration - require 21+ but accept any higher version
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+// Compiler options
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-Xlint:unchecked'
+    options.compilerArgs << '-Xlint:deprecation'
+    options.compilerArgs << '--enable-preview'
+}
+
+// JAR configuration
+jar {
+    manifest {
+        attributes(
+            'Main-Class': 'Main',
+            'Implementation-Title': 'Riege MC Terminal',
+            'Implementation-Version': version
+        )
+    }
+    // Include native library in JAR
+    from('native') {
+        into 'native'
+    }
+    // Create fat JAR with dependencies
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+// Configure run task with library path
+tasks.withType(JavaExec) {
+    def nativeLibPath = file('native').absolutePath
+    environment 'LD_LIBRARY_PATH', nativeLibPath
+    environment 'DYLD_LIBRARY_PATH', nativeLibPath
+    systemProperty 'java.library.path', nativeLibPath
+}
+
+// Download Java toolchain if not available
+tasks.withType(JavaCompile).configureEach {
+    javaCompiler = javaToolchains.compilerFor {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+// Configure run task
+tasks.named('run') {
+    standardInput = System.in
+}
