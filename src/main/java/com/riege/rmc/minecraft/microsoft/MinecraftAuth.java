@@ -12,7 +12,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
-public class MinecraftAuth {
+public final class MinecraftAuth {
 
     private static final String MC_LOGIN_URL = "https://api.minecraftservices.com/authentication/login_with_xbox";
     private static final String MC_PROFILE_URL = "https://api.minecraftservices.com/minecraft/profile";
