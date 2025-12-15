@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-public class PacketBuffer {
+public final class PacketBuffer {
     private final ByteArrayOutputStream baos;
     private final DataOutputStream dos;
 

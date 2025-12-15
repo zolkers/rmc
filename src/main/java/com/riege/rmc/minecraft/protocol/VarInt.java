@@ -5,7 +5,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class VarInt {
+public final class VarInt {
 
     public static int readVarInt(DataInputStream in) throws IOException {
         int value = 0;

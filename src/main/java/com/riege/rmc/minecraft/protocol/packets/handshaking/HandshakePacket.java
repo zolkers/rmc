@@ -6,18 +6,8 @@ import com.riege.rmc.minecraft.protocol.PacketBuffer;
 
 import java.io.IOException;
 
-public class HandshakePacket implements Packet {
+public record HandshakePacket(String serverAddress, int serverPort, NextState nextState) implements Packet {
     private static final int PROTOCOL_VERSION = 767; // Minecraft 1.21.4
-
-    private final String serverAddress;
-    private final int serverPort;
-    private final NextState nextState;
-
-    public HandshakePacket(String serverAddress, int serverPort, NextState nextState) {
-        this.serverAddress = serverAddress;
-        this.serverPort = serverPort;
-        this.nextState = nextState;
-    }
 
     @Override
     public void write(PacketBuffer buffer) throws IOException {

@@ -8,7 +8,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-public class SessionServerAuth {
+public final class SessionServerAuth {
     private static final String SESSION_SERVER_URL = "https://sessionserver.mojang.com/session/minecraft/join";
 
     public static void joinServer(String accessToken, String uuid, String serverHash) throws IOException, InterruptedException {

@@ -3,15 +3,13 @@ package com.riege.rmc.minecraft.protocol;
 import com.riege.rmc.minecraft.microsoft.AuthenticatedProfile;
 import com.riege.rmc.minecraft.protocol.packets.handshaking.HandshakePacket;
 import com.riege.rmc.minecraft.protocol.packets.login.EncryptionResponsePacket;
-import com.riege.rmc.minecraft.protocol.packets.login.LoginAcknowledgedPacket;
 import com.riege.rmc.minecraft.protocol.packets.login.LoginStartPacket;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.function.Consumer;
 
-public class ServerConnection {
+public final class ServerConnection {
     private final String host;
     private final int port;
     private MinecraftConnection connection;
@@ -30,24 +28,21 @@ public class ServerConnection {
         connection = new MinecraftConnection(host, port);
         logger.accept("TCP connection established");
 
-        // 2. Send handshake
         HandshakePacket handshake = new HandshakePacket(host, port, HandshakePacket.NextState.LOGIN);
         connection.sendPacket(handshake);
         logger.accept("Handshake sent");
 
-        // 3. Send login start
         LoginStartPacket loginStart = new LoginStartPacket(profile.username(), profile.uuid());
         connection.sendPacket(loginStart);
         logger.accept("Login request sent");
 
-        // 4. Wait for server response
         MinecraftConnection.PacketData response = connection.readPacket();
 
-        switch (response.packetId) {
+        switch (response.packetId()) {
             case 0x01 -> handleEncryptionRequest(response, profile);
             case 0x02 -> handleLoginSuccess(response);
             case 0x00 -> handleDisconnect(response);
-            default -> throw new IOException("Unknown packet ID: 0x" + Integer.toHexString(response.packetId));
+            default -> throw new IOException("Unknown packet ID: 0x" + Integer.toHexString(response.packetId()));
         }
     }
 
@@ -56,51 +51,41 @@ public class ServerConnection {
 
         DataInputStream data = packet.getDataStream();
 
-        // Read server ID
         int serverIdLength = VarInt.readVarInt(data);
         byte[] serverIdBytes = new byte[serverIdLength];
         data.readFully(serverIdBytes);
         String serverId = new String(serverIdBytes);
 
-        // Read public key
         int publicKeyLength = VarInt.readVarInt(data);
         byte[] publicKey = new byte[publicKeyLength];
         data.readFully(publicKey);
 
-        // Read verify token
         int verifyTokenLength = VarInt.readVarInt(data);
         byte[] verifyToken = new byte[verifyTokenLength];
         data.readFully(verifyToken);
 
-        // Generate shared secret
         byte[] sharedSecret = EncryptionUtils.generateSharedSecret();
 
-        // Encrypt shared secret and verify token
         byte[] encryptedSecret = EncryptionUtils.encryptRSA(publicKey, sharedSecret);
         byte[] encryptedToken = EncryptionUtils.encryptRSA(publicKey, verifyToken);
 
-        // Authenticate with session server
         String serverHash = EncryptionUtils.generateServerIdHash(serverId, sharedSecret, publicKey);
         SessionServerAuth.joinServer(profile.accessToken(), profile.uuid().toString(), serverHash);
         logger.accept("Authenticated with session server");
 
-        // Send encryption response
         sendEncryptionResponse(encryptedSecret, encryptedToken);
 
-        // Enable encryption
         connection.enableEncryption(sharedSecret);
         logger.accept("Encryption enabled");
 
-        // Wait for login success
         MinecraftConnection.PacketData successPacket = connection.readPacket();
-        if (successPacket.packetId == 0x02) {
+        if (successPacket.packetId() == 0x02) {
             handleLoginSuccess(successPacket);
-        } else if (successPacket.packetId == 0x03) {
+        } else if (successPacket.packetId() == 0x03) {
             // Set compression
             handleSetCompression(successPacket);
-            // After compression, wait for login success
             successPacket = connection.readPacket();
-            if (successPacket.packetId == 0x02) {
+            if (successPacket.packetId() == 0x02) {
                 handleLoginSuccess(successPacket);
             }
         }

@@ -6,7 +6,7 @@ import com.riege.rmc.minecraft.protocol.PacketBuffer;
 
 import java.io.IOException;
 
-public class LoginAcknowledgedPacket implements Packet {
+public final class LoginAcknowledgedPacket implements Packet {
 
     @Override
     public void write(PacketBuffer buffer) {

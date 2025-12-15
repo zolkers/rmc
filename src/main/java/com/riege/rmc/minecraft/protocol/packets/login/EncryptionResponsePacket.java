@@ -6,14 +6,7 @@ import com.riege.rmc.minecraft.protocol.PacketBuffer;
 
 import java.io.IOException;
 
-public class EncryptionResponsePacket implements Packet {
-    private final byte[] encryptedSharedSecret;
-    private final byte[] encryptedVerifyToken;
-
-    public EncryptionResponsePacket(byte[] encryptedSharedSecret, byte[] encryptedVerifyToken) {
-        this.encryptedSharedSecret = encryptedSharedSecret;
-        this.encryptedVerifyToken = encryptedVerifyToken;
-    }
+public record EncryptionResponsePacket(byte[] encryptedSharedSecret, byte[] encryptedVerifyToken) implements Packet {
 
     @Override
     public void write(PacketBuffer buffer) throws IOException {

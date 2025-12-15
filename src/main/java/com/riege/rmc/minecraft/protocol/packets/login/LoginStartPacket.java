@@ -7,14 +7,7 @@ import com.riege.rmc.minecraft.protocol.PacketBuffer;
 import java.io.IOException;
 import java.util.UUID;
 
-public class LoginStartPacket implements Packet {
-    private final String username;
-    private final UUID uuid;
-
-    public LoginStartPacket(String username, UUID uuid) {
-        this.username = username;
-        this.uuid = uuid;
-    }
+public record LoginStartPacket(String username, UUID uuid) implements Packet {
 
     @Override
     public void write(PacketBuffer buffer) throws IOException {

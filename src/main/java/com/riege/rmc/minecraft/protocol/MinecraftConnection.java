@@ -84,17 +84,10 @@ public class MinecraftConnection implements AutoCloseable {
         }
     }
 
-    public static class PacketData {
-        public final int packetId;
-        public final byte[] payload;
-
-        public PacketData(int packetId, byte[] payload) {
-            this.packetId = packetId;
-            this.payload = payload;
-        }
+    public record PacketData(int packetId, byte[] payload) {
 
         public DataInputStream getDataStream() {
-            return new DataInputStream(new ByteArrayInputStream(payload));
+                return new DataInputStream(new ByteArrayInputStream(payload));
+            }
         }
-    }
 }

@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
 
-public class EncryptionUtils {
+public final class EncryptionUtils {
 
     public static byte[] generateSharedSecret() {
         byte[] secret = new byte[16];
