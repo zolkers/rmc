@@ -2,7 +2,6 @@ package com.riege.rmc.minecraft.packet;
 
 import java.util.Arrays;
 import java.util.Optional;
-
 public enum MinecraftPacket {
 
     // Configuration - toClient
