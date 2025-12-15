@@ -1,5 +1,5 @@
 /**
- * Annotation-based command framework for the main.java.com.riege.rmc.terminal system.
+ * Annotation-based command framework for the com.riege.rmc.terminal system.
  * <p>
  * This package provides a modern, flexible command system using Java annotations
  * instead of traditional programmatic registration. It simplifies command
@@ -8,19 +8,19 @@
  *
  * <h2>Core Components</h2>
  * <ul>
- *   <li>{@link main.java.com.riege.rmc.terminal.command.core.CommandFramework} - main.java.com.riege.rmc.Main framework coordinator</li>
- *   <li>{@link main.java.com.riege.rmc.terminal.command.core.CommandAPI} - Global API for command interaction</li>
- *   <li>{@link main.java.com.riege.rmc.terminal.command.core.CommandContext} - Execution context passed to handlers</li>
- *   <li>{@link main.java.com.riege.rmc.terminal.command.core.CommandRegistry} - Command storage and lookup</li>
- *   <li>{@link main.java.com.riege.rmc.terminal.command.core.CommandInfo} - Command metadata container</li>
+ *   <li>{@link com.riege.rmc.terminal.command.core.CommandFramework} - com.riege.rmc.Main framework coordinator</li>
+ *   <li>{@link com.riege.rmc.terminal.command.core.CommandAPI} - Global API for command interaction</li>
+ *   <li>{@link com.riege.rmc.terminal.command.core.CommandContext} - Execution context passed to handlers</li>
+ *   <li>{@link com.riege.rmc.terminal.command.core.CommandRegistry} - Command storage and lookup</li>
+ *   <li>{@link com.riege.rmc.terminal.command.core.CommandInfo} - Command metadata container</li>
  * </ul>
  *
  * <h2>Annotations</h2>
  * <ul>
- *   <li>{@link main.java.com.riege.rmc.terminal.command.annotations.Command} - Marks a class as a command</li>
- *   <li>{@link main.java.com.riege.rmc.terminal.command.annotations.CommandHandler} - Marks handler methods</li>
- *   <li>{@link main.java.com.riege.rmc.terminal.command.annotations.Argument} - Defines argument metadata</li>
- *   <li>{@link main.java.com.riege.rmc.terminal.command.annotations.Permission} - Specifies permissions</li>
+ *   <li>{@link com.riege.rmc.terminal.command.annotations.Command} - Marks a class as a command</li>
+ *   <li>{@link com.riege.rmc.terminal.command.annotations.CommandHandler} - Marks handler methods</li>
+ *   <li>{@link com.riege.rmc.terminal.command.annotations.Argument} - Defines argument metadata</li>
+ *   <li>{@link com.riege.rmc.terminal.command.annotations.Permission} - Specifies permissions</li>
  * </ul>
  *
  * <h2>Quick Start</h2>
@@ -101,7 +101,7 @@
  *
  * <h2>Argument Parsing</h2>
  * <p>
- * {@link main.java.com.riege.rmc.terminal.command.core.CommandContext} provides rich argument parsing:
+ * {@link com.riege.rmc.terminal.command.core.CommandContext} provides rich argument parsing:
  * </p>
  * <pre>{@code
  * @CommandHandler
@@ -153,24 +153,24 @@
  *
  * <h2>Integration with Terminal</h2>
  * <p>
- * The framework integrates seamlessly with the main.java.com.riege.rmc.terminal system:
+ * The framework integrates seamlessly with the com.riege.rmc.terminal system:
  * </p>
  * <pre>{@code
  * // Initialize both systems
  * Logger.initialize();
  * CommandAPI cmdApi = CommandAPI.getInstance();
  * cmdApi.initialize();
- * Terminal main.java.com.riege.rmc.terminal = new Terminal();
+ * Terminal com.riege.rmc.terminal = new Terminal();
  *
  * // Register framework commands
  * cmdApi.registerCommand(new MyCommand());
  *
- * // Bridge main.java.com.riege.rmc.terminal and framework
- * main.java.com.riege.rmc.terminal.registerCommand("cmd", args -> {
+ * // Bridge com.riege.rmc.terminal and framework
+ * com.riege.rmc.terminal.registerCommand("cmd", args -> {
  *     cmdApi.executeCommand(String.join(" ", args));
  * });
  *
- * main.java.com.riege.rmc.terminal.run();
+ * com.riege.rmc.terminal.run();
  * }</pre>
  *
  * <h2>Advanced Features</h2>
@@ -178,7 +178,7 @@
  *   <li><b>Command Aliases:</b> Multiple names for the same command</li>
  *   <li><b>Priority System:</b> Control handler selection order</li>
  *   <li><b>Auto-validation:</b> Min/max argument count checks</li>
- *   <li><b>Tab Completion:</b> Partial command matching via {@link main.java.com.riege.rmc.terminal.command.core.CommandRegistry#findMatchingCommands}</li>
+ *   <li><b>Tab Completion:</b> Partial command matching via {@link com.riege.rmc.terminal.command.core.CommandRegistry#findMatchingCommands}</li>
  *   <li><b>Dynamic Registration:</b> Add/remove commands at runtime</li>
  *   <li><b>Thread Safety:</b> All operations are thread-safe</li>
  * </ul>
