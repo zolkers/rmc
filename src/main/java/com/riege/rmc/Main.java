@@ -7,6 +7,7 @@ import com.riege.rmc.terminal.command.impl.ConnectCommand;
 import com.riege.rmc.terminal.command.impl.ExitCommand;
 import com.riege.rmc.terminal.command.impl.HelpCommand;
 import com.riege.rmc.terminal.command.impl.LogoutCommand;
+import com.riege.rmc.terminal.command.impl.StatusCommand;
 import com.riege.rmc.terminal.logging.Logger;
 import com.riege.rmc.terminal.logging.MessageLogger;
 
@@ -24,6 +25,7 @@ public class Main {
         manager.register(new AuthCommand());
         manager.register(new LogoutCommand());
         manager.register(new ConnectCommand());
+        manager.register(new StatusCommand());
 
         try {
             System.out.println("[DEBUG] Loading Rust terminal library...");

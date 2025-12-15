@@ -5,6 +5,7 @@ import com.riege.rmc.terminal.command.core.CommandMiddleware;
 import com.riege.rmc.terminal.command.core.PermissionProvider;
 import com.riege.rmc.terminal.command.annotations.Permission;
 
+@SuppressWarnings("unused")
 public record PermissionMiddleware(PermissionProvider provider) implements CommandMiddleware {
 
     @Override

@@ -9,7 +9,7 @@ import java.io.IOException;
 public class LoginAcknowledgedPacket implements Packet {
 
     @Override
-    public void write(PacketBuffer buffer) throws IOException {
+    public void write(PacketBuffer buffer) {
         // No data for this packet
     }
 

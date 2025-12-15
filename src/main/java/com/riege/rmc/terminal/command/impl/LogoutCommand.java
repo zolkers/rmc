@@ -11,7 +11,7 @@ import com.riege.rmc.terminal.command.core.CommandContext;
     aliases = {"disconnect"},
     usage = "logout"
 )
-public class LogoutCommand extends BaseCommand {
+public final class LogoutCommand extends BaseCommand {
 
     @Override
     public void execute(CommandContext ctx) {

@@ -9,11 +9,11 @@ import com.riege.rmc.terminal.command.annotations.Command;
     description = "Arrête le terminal",
     aliases = {"quit", "stop"}
 )
-public class ExitCommand extends BaseCommand {
+public final class ExitCommand extends BaseCommand {
 
     @Override
     public void execute(CommandContext ctx) {
-        msg(ctx, "Arrêt du système...");
+        msg(ctx, "Exiting...");
         System.exit(0);
     }
 }

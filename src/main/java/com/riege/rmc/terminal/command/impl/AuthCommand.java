@@ -16,7 +16,7 @@ import com.riege.rmc.terminal.command.core.CommandContext;
     aliases = {"login"},
     usage = "auth"
 )
-public class AuthCommand extends BaseCommand {
+public final class AuthCommand extends BaseCommand {
 
     @Override
     public void execute(CommandContext ctx) {

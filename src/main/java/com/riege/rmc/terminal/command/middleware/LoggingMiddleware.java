@@ -4,6 +4,7 @@ import com.riege.rmc.terminal.logging.Logger;
 import com.riege.rmc.terminal.command.core.CommandContext;
 import com.riege.rmc.terminal.command.core.CommandMiddleware;
 
+@SuppressWarnings("unused")
 public record LoggingMiddleware(boolean logArgs) implements CommandMiddleware {
 
     public LoggingMiddleware() {

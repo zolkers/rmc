@@ -12,7 +12,7 @@ import com.riege.rmc.terminal.command.core.CommandContext;
     description = "Connect to a Minecraft server",
     usage = "connect <server[:port]>"
 )
-public class ConnectCommand extends BaseCommand {
+public final class ConnectCommand extends BaseCommand {
 
     @Override
     public void execute(CommandContext ctx) {

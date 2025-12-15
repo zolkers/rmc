@@ -4,6 +4,7 @@ import com.riege.rmc.terminal.command.core.CommandContext;
 import com.riege.rmc.terminal.command.core.CommandMiddleware;
 import com.riege.rmc.terminal.command.annotations.Command;
 
+@SuppressWarnings("unused")
 public final class ValidationMiddleware implements CommandMiddleware {
 
     @Override

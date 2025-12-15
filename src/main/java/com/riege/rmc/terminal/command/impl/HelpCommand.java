@@ -16,7 +16,7 @@ import java.util.List;
     aliases = {"?", "h"},
     usage = "help [page]"
 )
-public class HelpCommand extends BaseCommand {
+public final class HelpCommand extends BaseCommand {
 
     private final CommandFramework framework;
     public HelpCommand(CommandFramework framework) {
