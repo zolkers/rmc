@@ -3,7 +3,7 @@ package com.riege.rmc.terminal.command.core;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommandManager {
+public final class CommandManager {
 
     private final CommandFramework framework;
     private final List<BaseCommand> registeredCommands;

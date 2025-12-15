@@ -11,7 +11,7 @@ import java.util.*;
  * @author riege
  * @version 1.0
  */
-public class SubCommandInfo {
+public final class SubCommandInfo {
 
     private final String name;
     private final SubCommand annotation;

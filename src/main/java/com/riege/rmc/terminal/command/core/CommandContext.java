@@ -37,7 +37,7 @@ import java.util.*;
  * @author riege
  * @version 1.0
  */
-public class CommandContext {
+public final class CommandContext {
 
     /**
      * The name of the command being executed.

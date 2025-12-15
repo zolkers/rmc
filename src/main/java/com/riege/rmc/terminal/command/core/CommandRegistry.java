@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author riege
  * @version 1.0
  */
-public class CommandRegistry {
+public final class CommandRegistry {
 
     /**
      * Map of command names to CommandInfo objects.

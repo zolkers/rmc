@@ -20,7 +20,7 @@ import java.util.concurrent.Executors;
  * @author riege
  * @version 1.1
  */
-public class CommandFramework {
+public final class CommandFramework {
 
     private final CommandRegistry registry;
     private final ExecutorService asyncExecutor;

@@ -15,7 +15,7 @@ import java.util.*;
  * @author riege
  * @version 1.0
  */
-public class OptionParser {
+public final class OptionParser {
 
     public static class ParseResult {
         private final List<String> positionalArgs;

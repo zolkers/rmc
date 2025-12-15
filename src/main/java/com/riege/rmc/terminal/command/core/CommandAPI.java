@@ -33,7 +33,7 @@ import java.util.concurrent.CompletableFuture;
  * @author riege
  * @version 1.0
  */
-public class CommandAPI {
+public final class CommandAPI {
 
     /**
      * Singleton instance.

@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class MicrosoftAuth {
+public final class MicrosoftAuth {
 
     private static final String CLIENT_ID = "00000000402b5328";
     private static final String DEVICE_CODE_URL = "https://login.live.com/oauth20_connect.srf";
@@ -176,7 +176,7 @@ public class MicrosoftAuth {
             }
 
             XblAuthResponse xstsResponse = gson.fromJson(response.body(), XblAuthResponse.class);
-            String userHash = xstsResponse.displayClaims.xui.get(0).uhs;
+            String userHash = xstsResponse.displayClaims.xui.getFirst().uhs;
 
             return new XboxToken(xstsResponse.token, userHash);
         } catch (IOException | InterruptedException e) {
@@ -191,7 +191,6 @@ public class MicrosoftAuth {
                 .collect(Collectors.joining("&"));
     }
 
-    // Internal DTOs
     private static class DeviceCodeResponse {
         @SerializedName("device_code")
         String deviceCode;

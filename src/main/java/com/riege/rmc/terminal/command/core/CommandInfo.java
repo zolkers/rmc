@@ -16,7 +16,7 @@ import java.util.*;
  * @author riege
  * @version 1.0
  */
-public class CommandInfo {
+public final class CommandInfo {
 
     /**
      * The command annotation metadata.

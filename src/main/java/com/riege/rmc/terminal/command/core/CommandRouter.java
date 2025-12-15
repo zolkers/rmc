@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author riege
  * @version 1.0
  */
-public class CommandRouter {
+public final class CommandRouter {
 
     private final String name;
     private final String prefix;

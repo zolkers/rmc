@@ -13,7 +13,7 @@ import java.util.*;
  * @author riege
  * @version 1.0
  */
-public class RouterScanner {
+public final class RouterScanner {
 
     /**
      * Scans a router class and extracts all commands and subcommands.
