@@ -5,13 +5,7 @@ import com.riege.rmc.terminal.command.core.CommandMiddleware;
 import com.riege.rmc.terminal.command.core.PermissionProvider;
 import com.riege.rmc.terminal.command.annotations.Permission;
 
-public class PermissionMiddleware implements CommandMiddleware {
-
-    private final PermissionProvider provider;
-
-    public PermissionMiddleware(PermissionProvider provider) {
-        this.provider = provider;
-    }
+public record PermissionMiddleware(PermissionProvider provider) implements CommandMiddleware {
 
     @Override
     public boolean handle(final CommandContext context, final NextHandler next) {

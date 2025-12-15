@@ -3,12 +3,8 @@ package com.riege.rmc.terminal.command.middleware;
 import com.riege.rmc.terminal.logging.Logger;
 import com.riege.rmc.terminal.command.core.CommandContext;
 import com.riege.rmc.terminal.command.core.CommandMiddleware;
-public class LoggingMiddleware implements CommandMiddleware {
 
-    private final boolean logArgs;
-    public LoggingMiddleware(final boolean logArgs) {
-        this.logArgs = logArgs;
-    }
+public record LoggingMiddleware(boolean logArgs) implements CommandMiddleware {
 
     public LoggingMiddleware() {
         this(true);

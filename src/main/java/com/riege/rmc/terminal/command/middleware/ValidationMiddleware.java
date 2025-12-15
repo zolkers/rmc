@@ -4,7 +4,7 @@ import com.riege.rmc.terminal.command.core.CommandContext;
 import com.riege.rmc.terminal.command.core.CommandMiddleware;
 import com.riege.rmc.terminal.command.annotations.Command;
 
-public class ValidationMiddleware implements CommandMiddleware {
+public final class ValidationMiddleware implements CommandMiddleware {
 
     @Override
     public boolean handle(final CommandContext context, final NextHandler next) {
