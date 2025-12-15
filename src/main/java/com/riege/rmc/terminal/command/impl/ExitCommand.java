@@ -6,7 +6,7 @@ import com.riege.rmc.terminal.command.annotations.Command;
 
 @Command(
     name = "exit",
-    description = "Arrête le terminal",
+    description = "Exits the terminal",
     aliases = {"quit", "stop"}
 )
 public final class ExitCommand extends BaseCommand {

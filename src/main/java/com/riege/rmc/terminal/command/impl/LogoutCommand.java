@@ -16,7 +16,7 @@ public final class LogoutCommand extends BaseCommand {
     @Override
     public void execute(CommandContext ctx) {
         if (!SessionManager.isAuthenticated()) {
-            msg(ctx, "You are not authenticated.");
+            error(ctx, "You are not authenticated.");
             return;
         }
 

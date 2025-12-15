@@ -44,17 +44,17 @@ public final class AuthCommand extends BaseCommand {
                 SessionManager.setProfile(profile);
 
                 msg(ctx, "");
-                msg(ctx, "Successfully authenticated!");
-                msg(ctx, "Username: " + profile.username());
-                msg(ctx, "UUID: " + profile.uuid());
+                success(ctx, "Successfully authenticated!");
+                success(ctx, "Username: " + profile.username());
+                success(ctx, "UUID: " + profile.uuid());
                 msg(ctx, "");
-                msg(ctx, "You can now connect to servers using: connect <server>");
+                success(ctx, "You can now connect to servers using: connect <server>");
 
             } catch (AuthException e) {
                 error(ctx, "Authentication failed: " + e.getMessage());
             } catch (Exception e) {
                 error(ctx, "Unexpected error: " + e.getMessage());
-                e.printStackTrace();
+                System.err.println(e.getMessage());
             }
         });
 

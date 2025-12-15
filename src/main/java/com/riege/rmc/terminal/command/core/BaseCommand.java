@@ -1,6 +1,5 @@
 package com.riege.rmc.terminal.command.core;
 
-
 import com.riege.rmc.terminal.command.annotations.CommandHandler;
 public abstract class BaseCommand {
     @CommandHandler
@@ -16,4 +15,9 @@ public abstract class BaseCommand {
     protected void error(CommandContext ctx, String msg) {
         ctx.error(msg);
     }
+
+    protected void success(CommandContext ctx, String msg) {ctx.success(msg);}
+
+    protected void warning(CommandContext ctx, String msg) {ctx.warning(msg);}
+
 }

@@ -51,8 +51,7 @@ public final class ConnectCommand extends BaseCommand {
                 serverConn.connect(SessionManager.getProfile());
 
                 msg(ctx, "");
-                msg(ctx, "You are now connected to the server!");
-                msg(ctx, "Note: Full gameplay support coming soon!");
+                success(ctx, "You are now connected to the server!");
 
             } catch (Exception e) {
                 error(ctx, "Connection failed: " + e.getMessage());
