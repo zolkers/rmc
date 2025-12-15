@@ -51,9 +51,11 @@ public final class MessageLogger {
         if (rustBridge != null) {
             String txt = message.getContent();
             switch (message.getType()) {
-                case ERROR: rustBridge.terminal_log_error(txt); break;
-                case SUCCESS: rustBridge.terminal_log_success(txt); break;
-                default: rustBridge.terminal_log_info(txt); break;
+                case ERROR -> rustBridge.terminal_log_error(txt);
+                case SUCCESS -> rustBridge.terminal_log_success(txt);
+                case WARNING -> rustBridge.terminal_log_warning(txt);
+                case DEBUG -> rustBridge.terminal_log_debug(txt);
+                case INFO, PLAIN -> rustBridge.terminal_log_info(txt);
             }
         } else {
             System.out.println("[" + message.getType() + "] " + message.getContent());

@@ -1,6 +1,7 @@
 package com.riege.rmc.terminal.command.impl;
 
 import com.riege.rmc.minecraft.SessionManager;
+import com.riege.rmc.minecraft.protocol.ServerConnection;
 import com.riege.rmc.terminal.command.annotations.Argument;
 import com.riege.rmc.terminal.command.annotations.Command;
 import com.riege.rmc.terminal.command.core.BaseCommand;
@@ -31,36 +32,37 @@ public class ConnectCommand extends BaseCommand {
             return;
         }
 
-        ServerAddress serverAddr = parseAddress(address);
-
-        msg(ctx, "Connecting to " + serverAddr.host + ":" + serverAddr.port + "...");
         msg(ctx, "Username: " + SessionManager.getProfile().username());
         msg(ctx, "");
 
-        // TODO: Implement actual server connection
-        // This would require:
-        // - TCP connection to server
-        // - Handshake packet
-        // - Login sequence
-        // - Encryption handling
-        // - Packet reading/writing
-
-        error(ctx, "Server connection not yet implemented.");
-        msg(ctx, "Coming soon: Full Minecraft protocol support!");
+        Thread connectionThread = getThread(ctx, address);
+        connectionThread.start();
     }
 
-    private ServerAddress parseAddress(String address) {
-        if (address.contains(":")) {
-            String[] parts = address.split(":", 2);
+    private Thread getThread(CommandContext ctx, String address) {
+        Thread connectionThread = new Thread(() -> {
             try {
-                int port = Integer.parseInt(parts[1]);
-                return new ServerAddress(parts[0], port);
-            } catch (NumberFormatException e) {
-                return new ServerAddress(parts[0], 25565);
-            }
-        }
-        return new ServerAddress(address, 25565);
-    }
+                ServerConnection serverConn =
+                        new ServerConnection(
+                                address,
+                                message -> msg(ctx, message)
+                        );
 
-    private record ServerAddress(String host, int port) {}
+                serverConn.connect(SessionManager.getProfile());
+
+                msg(ctx, "");
+                msg(ctx, "You are now connected to the server!");
+                msg(ctx, "Note: Full gameplay support coming soon!");
+
+            } catch (Exception e) {
+                error(ctx, "Connection failed: " + e.getMessage());
+                if (e.getCause() != null) {
+                    error(ctx, "Cause: " + e.getCause().getMessage());
+                }
+            }
+        });
+
+        connectionThread.setDaemon(true);
+        return connectionThread;
+    }
 }
