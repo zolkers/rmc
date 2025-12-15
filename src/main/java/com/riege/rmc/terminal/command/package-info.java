@@ -207,6 +207,5 @@
  *
  * @author riege
  * @version 1.0
- * @since 1.21.4
  */
 package com.riege.rmc.terminal.command;
