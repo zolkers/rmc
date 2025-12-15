@@ -39,6 +39,8 @@ public interface RustTerminal extends Library {
     void terminal_log_info(String msg);
     void terminal_log_error(String msg);
     void terminal_log_success(String msg);
+    void terminal_log_warning(String msg);
+    void terminal_log_debug(String msg);
     void terminal_add_candidate(String candidate);
     interface NativeCallback extends Callback {
         void invoke(String data);
