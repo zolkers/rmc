@@ -252,7 +252,7 @@ public final class Logger {
      */
     public static List<Message> getRecentMessages(final int count) {
         ensureInitialized();
-        return INSTANCE.get().getRecentMessages(count);
+        return INSTANCE.get().getRecentMessages();
     }
 
     /**

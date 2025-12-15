@@ -45,8 +45,7 @@ public final class MessageLogger {
     public int size() { synchronized(messages) { return messages.size(); } }
     public boolean isEmpty() { synchronized(messages) { return messages.isEmpty(); } }
     public void clear() { synchronized(messages) { messages.clear(); } }
-    public List<Message> getRecentMessages(int n) { synchronized(messages) { return new ArrayList<>(messages); } } // Simplifié
-
+    public List<Message> getRecentMessages() { synchronized(messages) { return new ArrayList<>(messages); } }
     private void printToSystemOut(final Message message) {
         if (rustBridge != null) {
             String txt = message.getContent();
