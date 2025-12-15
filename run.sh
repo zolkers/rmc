@@ -18,9 +18,12 @@ echo -e "${C3}██████╔╝${C4}██╔████╔██║${C5
 echo -e "${C4}██╔══██╗${C5}██║╚██╔╝██║${C6}██║     "
 echo -e "${C5}██║  ██║${C6}██║ ╚═╝ ██║${C7}╚██████╗"
 echo -e "${C6}╚═╝  ╚═╝${C7}╚═╝     ╚═╝  ╚═════╝${RESET}"
-
 echo
 sleep 0.8
+echo -e "${C4}JVM version info: 21${RESET}"
+echo -e "${C4}Building for MC 1.21.4${RESET}"
+echo
+sleep 0.5
 
 echo -e "${C5}Building shadow JAR...${RESET}"
 ./gradlew shadowJar -q
