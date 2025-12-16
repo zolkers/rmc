@@ -34,21 +34,21 @@ public class PacketLogger {
 
     private String formatIncomingPacket(int packetId, ConnectionState state, int size, byte[] payload) {
         MinecraftPacket.State mcState = mapConnectionStateToPacketState(state);
-        MinecraftPacket packetInfo = MinecraftPacket.findByIdAndStateAndDirection(
+        var packetInfoOpt = MinecraftPacket.findByIdAndStateAndDirection(
             packetId, mcState, MinecraftPacket.Direction.TO_CLIENT
         );
 
         String hexId = String.format("0x%02X", packetId);
-        String packetName = packetInfo != null ? packetInfo.getName() : "unknown";
+        String packetName = packetInfoOpt.map(MinecraftPacket::getName).orElse("unknown");
 
         if (verbosityLevel == 1) {
             return String.format("[RECV] %s %s", hexId, packetName);
         } else if (verbosityLevel == 2) {
-            String direction = packetInfo != null ? packetInfo.getDirection().name() : "TO_CLIENT";
+            String direction = packetInfoOpt.map(p -> p.getDirection().name()).orElse("TO_CLIENT");
             return String.format("[RECV] %s %s %s (%d bytes) [%s]",
                 hexId, packetName, direction, size, state.name());
         } else {
-            String direction = packetInfo != null ? packetInfo.getDirection().name() : "TO_CLIENT";
+            String direction = packetInfoOpt.map(p -> p.getDirection().name()).orElse("TO_CLIENT");
             String hexDump = createHexDump(payload, 256);
             return String.format("[RECV] %s %s %s (%d bytes) [%s]\n%s",
                 hexId, packetName, direction, size, state.name(), hexDump);
@@ -57,17 +57,17 @@ public class PacketLogger {
 
     private String formatOutgoingPacket(int packetId, ConnectionState state) {
         MinecraftPacket.State mcState = mapConnectionStateToPacketState(state);
-        MinecraftPacket packetInfo = MinecraftPacket.findByIdAndStateAndDirection(
+        var packetInfoOpt = MinecraftPacket.findByIdAndStateAndDirection(
             packetId, mcState, MinecraftPacket.Direction.TO_SERVER
         );
 
         String hexId = String.format("0x%02X", packetId);
-        String packetName = packetInfo != null ? packetInfo.getName() : "unknown";
+        String packetName = packetInfoOpt.map(MinecraftPacket::getName).orElse("unknown");
 
         if (verbosityLevel == 1) {
             return String.format("[SEND] %s %s", hexId, packetName);
         } else {
-            String direction = packetInfo != null ? packetInfo.getDirection().name() : "TO_SERVER";
+            String direction = packetInfoOpt.map(p -> p.getDirection().name()).orElse("TO_SERVER");
             return String.format("[SEND] %s %s %s [%s]",
                 hexId, packetName, direction, state.name());
         }

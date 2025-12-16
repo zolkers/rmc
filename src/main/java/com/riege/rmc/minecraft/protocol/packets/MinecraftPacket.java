@@ -279,8 +279,13 @@ public enum MinecraftPacket {
         return String.format("0x%02X", packetId);
     }
 
-    public String getPacketName() {
+    public String getName() {
         return packetName;
+    }
+
+    @Deprecated
+    public String getPacketName() {
+        return this.getName();
     }
 
     public Direction getDirection() {
