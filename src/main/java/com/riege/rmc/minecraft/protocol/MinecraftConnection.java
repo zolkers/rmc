@@ -1,5 +1,7 @@
 package com.riege.rmc.minecraft.protocol;
 
+import com.riege.rmc.minecraft.protocol.logging.PacketLogger;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
@@ -15,11 +17,21 @@ public class MinecraftConnection implements AutoCloseable {
     private boolean encrypted = false;
     private Cipher encryptCipher;
     private Cipher decryptCipher;
+    private PacketLogger packetLogger;
+    private ConnectionState currentState = ConnectionState.HANDSHAKING;
 
     public MinecraftConnection(String host, int port) throws IOException {
         this.socket = new Socket(host, port);
         this.input = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
         this.output = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+    }
+
+    public void setPacketLogger(PacketLogger logger) {
+        this.packetLogger = logger;
+    }
+
+    public void setCurrentState(ConnectionState state) {
+        this.currentState = state;
     }
 
     public void sendPacket(Packet packet) throws IOException {
@@ -39,6 +51,10 @@ public class MinecraftConnection implements AutoCloseable {
         output.write(lengthBytes);
         output.write(packetData);
         output.flush();
+
+        if (packetLogger != null) {
+            packetLogger.logOutgoing(packet, currentState);
+        }
     }
 
     public PacketData readPacket() throws IOException {
@@ -58,7 +74,13 @@ public class MinecraftConnection implements AutoCloseable {
         byte[] payload = new byte[remaining];
         dataStream.readFully(payload);
 
-        return new PacketData(packetId, payload);
+        PacketData packetData = new PacketData(packetId, payload);
+
+        if (packetLogger != null) {
+            packetLogger.logIncoming(packetData, currentState);
+        }
+
+        return packetData;
     }
 
     public void enableEncryption(byte[] sharedSecret) throws GeneralSecurityException {

@@ -1,6 +1,6 @@
 package com.riege.rmc.minecraft.protocol.packets.login;
 
-import com.riege.rmc.minecraft.packet.MinecraftPacket;
+import com.riege.rmc.minecraft.protocol.packets.MinecraftPacket;
 import com.riege.rmc.minecraft.protocol.Packet;
 import com.riege.rmc.minecraft.protocol.PacketBuffer;
 

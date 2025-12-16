@@ -1,5 +1,7 @@
 package com.riege.rmc;
 
+import com.riege.rmc.minecraft.SessionManager;
+import com.riege.rmc.persistence.PersistenceManager;
 import com.riege.rmc.terminal.command.bridge.RustTerminal;
 import com.riege.rmc.terminal.command.core.CommandManager;
 import com.riege.rmc.terminal.command.impl.AuthCommand;
@@ -18,6 +20,17 @@ public class Main {
 
     public static void main(String[] args) {
         Logger.initialize();
+
+        // Load persisted profile
+        try {
+            PersistenceManager.getInstance().loadProfile()
+                .ifPresent(profile -> {
+                    SessionManager.setProfile(profile);
+                    Logger.success("Profile loaded: " + profile.username());
+                });
+        } catch (Exception e) {
+            Logger.warning("Could not load profile: " + e.getMessage());
+        }
 
         CommandManager manager = new CommandManager();
         manager.register(new HelpCommand(manager.getFramework()));

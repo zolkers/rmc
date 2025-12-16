@@ -6,7 +6,9 @@ import com.riege.rmc.minecraft.microsoft.AuthenticatedProfile;
 import com.riege.rmc.minecraft.microsoft.MinecraftAuth;
 import com.riege.rmc.minecraft.microsoft.MicrosoftAuth;
 import com.riege.rmc.minecraft.microsoft.MicrosoftToken;
+import com.riege.rmc.persistence.PersistenceManager;
 import com.riege.rmc.terminal.command.annotations.Command;
+import com.riege.rmc.terminal.command.annotations.CommandHandler;
 import com.riege.rmc.terminal.command.core.BaseCommand;
 import com.riege.rmc.terminal.command.core.CommandContext;
 
@@ -19,6 +21,7 @@ import com.riege.rmc.terminal.command.core.CommandContext;
 public final class AuthCommand extends BaseCommand {
 
     @Override
+    @CommandHandler
     public void execute(CommandContext ctx) {
         if (SessionManager.isAuthenticated()) {
             AuthenticatedProfile profile = SessionManager.getProfile();
@@ -42,6 +45,14 @@ public final class AuthCommand extends BaseCommand {
                 AuthenticatedProfile profile = mcAuth.authenticateWithMicrosoft(msToken);
 
                 SessionManager.setProfile(profile);
+
+                // Save profile to disk
+                try {
+                    PersistenceManager.getInstance().saveProfile(profile);
+                    msg(ctx, "Profile saved to disk");
+                } catch (Exception saveEx) {
+                    msg(ctx, "Warning: Could not save profile: " + saveEx.getMessage());
+                }
 
                 msg(ctx, "");
                 success(ctx, "Successfully authenticated!");

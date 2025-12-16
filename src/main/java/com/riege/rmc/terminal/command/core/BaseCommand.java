@@ -1,13 +1,13 @@
 package com.riege.rmc.terminal.command.core;
 
-import com.riege.rmc.terminal.command.annotations.CommandHandler;
 public abstract class BaseCommand {
-    @CommandHandler
-    public final void onCommand(CommandContext ctx) {
-        execute(ctx);
-    }
+    /**
+     * Default execute method for commands that don't use @CommandHandler with custom parameters.
+     * Override this method if you want simple command execution without parameter injection.
+     * If you use @CommandHandler with parameters, you don't need to override this.
+     */
+    public void execute(CommandContext ctx) {}
 
-    public abstract void execute(CommandContext ctx);
     protected void msg(CommandContext ctx, String msg) {
         ctx.send(msg);
     }
@@ -16,8 +16,11 @@ public abstract class BaseCommand {
         ctx.error(msg);
     }
 
-    protected void success(CommandContext ctx, String msg) {ctx.success(msg);}
+    protected void success(CommandContext ctx, String msg) {
+        ctx.success(msg);
+    }
 
-    protected void warning(CommandContext ctx, String msg) {ctx.warning(msg);}
-
+    protected void warning(CommandContext ctx, String msg) {
+        ctx.warning(msg);
+    }
 }

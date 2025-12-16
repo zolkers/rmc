@@ -58,6 +58,8 @@ bin/
 *.zip
 *.tar.gz
 *.rar
+.claude
+*.md
 
 # Virtual machine crash logs
 hs_err_pid*

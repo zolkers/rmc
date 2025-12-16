@@ -1,6 +1,6 @@
 package com.riege.rmc.minecraft.protocol;
 
-import com.riege.rmc.minecraft.packet.MinecraftPacket;
+import com.riege.rmc.minecraft.protocol.packets.MinecraftPacket;
 
 import java.io.IOException;
 

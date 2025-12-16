@@ -1,5 +1,6 @@
 package com.riege.rmc.terminal.command.impl;
 
+import com.riege.rmc.terminal.command.annotations.CommandHandler;
 import com.riege.rmc.terminal.command.core.BaseCommand;
 import com.riege.rmc.terminal.command.core.CommandContext;
 import com.riege.rmc.terminal.command.annotations.Command;
@@ -12,6 +13,7 @@ import com.riege.rmc.terminal.command.annotations.Command;
 public final class ExitCommand extends BaseCommand {
 
     @Override
+    @CommandHandler
     public void execute(CommandContext ctx) {
         msg(ctx, "Exiting...");
         System.exit(0);

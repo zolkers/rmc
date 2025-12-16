@@ -1,4 +1,4 @@
-package com.riege.rmc.minecraft.packet;
+package com.riege.rmc.minecraft.protocol.packets;
 
 import java.util.Arrays;
 import java.util.Optional;
