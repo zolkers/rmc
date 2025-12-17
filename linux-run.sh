@@ -47,6 +47,7 @@ find_java21() {
         JAVA_VERSION=$(java -version 2>&1 | head -1 | cut -d'"' -f2 | cut -d'.' -f1)
         if [ "$JAVA_VERSION" = "21" ]; then
             # Found Java 21 in PATH, set JAVA_HOME
+            # shellcheck disable=SC2046
             JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
             export JAVA_HOME
             export PATH="$JAVA_HOME/bin:$PATH"
