@@ -9,9 +9,9 @@ import java.awt.*;
 /**
  * Modern-styled scroll pane with thin, sleek scrollbars.
  */
-public class ModernScrollPane extends JScrollPane {
+public class ScrollPane extends JScrollPane {
 
-    public ModernScrollPane(Component view) {
+    public ScrollPane(Component view) {
         super(view);
         setOpaque(false);
         setBorder(BorderFactory.createEmptyBorder());

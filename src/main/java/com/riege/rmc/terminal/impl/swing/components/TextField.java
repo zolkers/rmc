@@ -4,7 +4,6 @@ import com.riege.rmc.terminal.impl.swing.theme.TerminalTheme;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.ArrayList;
@@ -13,13 +12,13 @@ import java.util.List;
 /**
  * Modern text field with command history support.
  */
-public class ModernTextField extends JTextField {
+public class TextField extends JTextField {
 
     private final List<String> history = new ArrayList<>();
     private int historyIndex = -1;
     private String currentInput = "";
 
-    public ModernTextField() {
+    public TextField() {
         setBackground(TerminalTheme.BACKGROUND_SECONDARY);
         setForeground(TerminalTheme.TEXT_PRIMARY);
         setCaretColor(TerminalTheme.ACCENT_PRIMARY);

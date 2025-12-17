@@ -40,14 +40,12 @@ public final class ServerConnection {
         this.port = Integer.parseInt(parts[1]);
 
         PacketHandler defaultHandler = (packet, conn) -> {
-            // Try to identify the packet using the enum
             var packetInfo = MinecraftPacket.findByIdAndStateAndDirection(
                 packet.packetId(),
                 MinecraftPacket.State.valueOf(currentState.name()),
                 MinecraftPacket.Direction.TO_CLIENT
             );
 
-            // Only log in verbose mode
             if (verbosity > 0) {
                 if (packetInfo.isPresent()) {
                     logger.accept(String.format("Unhandled packet 0x%02X (%s) in state %s",
@@ -174,7 +172,6 @@ public final class ServerConnection {
         if (successPacket.packetId() == 0x02) {
             handleLoginSuccess();
         } else if (successPacket.packetId() == 0x03) {
-            // Set compression
             handleSetCompression(successPacket);
             successPacket = connection.readPacket();
             if (successPacket.packetId() == 0x02) {

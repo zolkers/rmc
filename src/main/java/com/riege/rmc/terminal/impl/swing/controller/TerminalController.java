@@ -2,9 +2,8 @@ package com.riege.rmc.terminal.impl.swing.controller;
 
 import com.riege.rmc.terminal.Terminal;
 import com.riege.rmc.terminal.impl.swing.model.TerminalDataModel;
-import com.riege.rmc.terminal.impl.swing.ui.ModernTerminalView;
+import com.riege.rmc.terminal.impl.swing.ui.TerminalView;
 
-import javax.swing.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;
@@ -14,10 +13,10 @@ import java.util.ArrayList;
  * Controller for the modern terminal.
  * Handles user input, command history, and tab completion.
  */
-public class ModernTerminalController {
+public class TerminalController {
 
     private final TerminalDataModel model;
-    private final ModernTerminalView view;
+    private final TerminalView view;
     private final Terminal.NativeCallback inputCallback;
     private final Terminal.NativeCallback tabCallback;
 
@@ -25,9 +24,9 @@ public class ModernTerminalController {
     private final List<String> commandHistory = new ArrayList<>();
     private int historyIndex = -1;
 
-    public ModernTerminalController(
+    public TerminalController(
         TerminalDataModel model,
-        ModernTerminalView view,
+        TerminalView view,
         Terminal.NativeCallback inputCallback,
         Terminal.NativeCallback tabCallback
     ) {

@@ -1,7 +1,6 @@
 package com.riege.rmc.terminal.impl.swing.ui;
 
-import com.riege.rmc.terminal.impl.swing.components.ModernScrollPane;
-import com.riege.rmc.terminal.impl.swing.components.ModernTextField;
+import com.riege.rmc.terminal.impl.swing.components.ScrollPane;
 import com.riege.rmc.terminal.impl.swing.theme.TerminalTheme;
 
 import javax.swing.*;
@@ -16,7 +15,7 @@ import java.util.regex.Pattern;
 /**
  * Modern terminal view with sleek design and smooth animations.
  */
-public class ModernTerminalView extends JFrame {
+public class TerminalView extends JFrame {
 
     private final JTextPane textPane;
     private final JTextField inputField;
@@ -28,7 +27,7 @@ public class ModernTerminalView extends JFrame {
     private static final int MAX_LINES = 5000;
     private int currentLineCount = 0;
 
-    public ModernTerminalView(StyledDocument document) {
+    public TerminalView(StyledDocument document) {
         super("RMC Terminal - Riege Minecraft Client");
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -47,7 +46,7 @@ public class ModernTerminalView extends JFrame {
 
         // Create text pane
         textPane = createTextPane(document);
-        ModernScrollPane scrollPane = new ModernScrollPane(textPane);
+        ScrollPane scrollPane = new ScrollPane(textPane);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
         // Create input field - SIMPLE VERSION THAT WORKS
