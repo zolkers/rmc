@@ -39,13 +39,31 @@ public final class ClientInformationPacket implements Packet {
 
     @Override
     public void write(PacketBuffer buffer) throws IOException {
+        System.out.println("[DEBUG] Writing CLIENT_INFORMATION packet:");
+        System.out.println("  locale: " + locale);
+        System.out.println("  viewDistance: " + viewDistance);
+        System.out.println("  chatMode: " + chatMode);
+        System.out.println("  chatColors: " + chatColors);
+        System.out.println("  displayedSkinParts: 0x" + Integer.toHexString(displayedSkinParts & 0xFF));
+        System.out.println("  mainHand: " + mainHand);
+        System.out.println("  textFilteringEnabled: " + textFilteringEnabled);
+        System.out.println("  allowServerListings: " + allowServerListings);
+
         buffer.writeString(locale);
-        buffer.writeBytes(new byte[]{viewDistance});
+        buffer.writeByte(viewDistance);
         buffer.writeVarInt(chatMode);
         buffer.writeBoolean(chatColors);
-        buffer.writeBytes(new byte[]{displayedSkinParts});
+        buffer.writeByte(displayedSkinParts);
         buffer.writeVarInt(mainHand);
         buffer.writeBoolean(textFilteringEnabled);
         buffer.writeBoolean(allowServerListings);
+
+        byte[] data = buffer.toByteArray();
+        System.out.println("  Total packet size: " + data.length + " bytes");
+        System.out.print("  Hex: ");
+        for (byte b : data) {
+            System.out.print(String.format("%02X ", b));
+        }
+        System.out.println();
     }
 }

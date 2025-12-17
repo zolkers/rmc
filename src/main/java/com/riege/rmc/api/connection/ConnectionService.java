@@ -21,6 +21,7 @@ public final class ConnectionService {
 
     /**
      * Connect to a Minecraft server.
+     * Automatically handles server transfers/redirections.
      *
      * @param serverAddress server address (host:port or just host)
      * @param verbosity verbose level (0=none, 1=basic, 2=detailed, 3=full)
@@ -32,6 +33,28 @@ public final class ConnectionService {
         int verbosity,
         Consumer<String> statusCallback
     ) {
+        return connectWithRedirection(serverAddress, verbosity, statusCallback, 0);
+    }
+
+    /**
+     * Internal method to handle connection with transfer redirection support.
+     * Includes recursion protection to prevent infinite redirect loops.
+     */
+    private ConnectionResult connectWithRedirection(
+        String serverAddress,
+        int verbosity,
+        Consumer<String> statusCallback,
+        int redirectCount
+    ) {
+        // Protect against infinite redirect loops
+        if (redirectCount > 5) {
+            return new ConnectionResult.Failure(
+                serverAddress,
+                "Too many redirects (max 5)",
+                new RuntimeException("Redirect loop detected")
+            );
+        }
+
         Optional<AuthenticatedProfile> profileOpt = sessionService.getCurrentProfile();
         if (profileOpt.isEmpty()) {
             return new ConnectionResult.NotAuthenticated();
@@ -49,6 +72,20 @@ public final class ConnectionService {
             );
 
             connection.connect(profile);
+
+            // Check if server requested a transfer
+            if (connection.hasTransferTarget()) {
+                String transferAddress = connection.getTransferHost() + ":" + connection.getTransferPort();
+                statusCallback.accept("Following server redirect to " + transferAddress);
+
+                // Recursively connect to transfer target
+                return connectWithRedirection(
+                    transferAddress,
+                    verbosity,
+                    statusCallback,
+                    redirectCount + 1
+                );
+            }
 
             this.currentConnection = connection;
 

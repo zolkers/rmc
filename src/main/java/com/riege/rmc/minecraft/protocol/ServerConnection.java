@@ -24,6 +24,8 @@ public final class ServerConnection {
     private final PacketLogger packetLogger;
     private KeepAliveManager keepAliveManager;
     private volatile ConnectionLoop connectionLoop;
+    private String transferHost;
+    private int transferPort;
 
     public ServerConnection(String address, Consumer<String> logger) {
         this(address, logger, 0);
@@ -52,19 +54,35 @@ public final class ServerConnection {
     private void registerHandlers() {
         // Configuration state handlers
         handlerRegistry.register(ConnectionState.CONFIGURATION, MinecraftPacket.Direction.TO_CLIENT,
-            0x04, new com.riege.rmc.minecraft.protocol.handler.configuration.KeepAliveConfigHandler());
+            0x01, new com.riege.rmc.minecraft.protocol.handler.configuration.CustomPayloadHandler());
+        handlerRegistry.register(ConnectionState.CONFIGURATION, MinecraftPacket.Direction.TO_CLIENT,
+            0x02, new com.riege.rmc.minecraft.protocol.handler.configuration.DisconnectConfigHandler());
         handlerRegistry.register(ConnectionState.CONFIGURATION, MinecraftPacket.Direction.TO_CLIENT,
             0x03, new com.riege.rmc.minecraft.protocol.handler.configuration.FinishConfigurationHandler());
+        handlerRegistry.register(ConnectionState.CONFIGURATION, MinecraftPacket.Direction.TO_CLIENT,
+            0x04, new com.riege.rmc.minecraft.protocol.handler.configuration.KeepAliveConfigHandler());
+        handlerRegistry.register(ConnectionState.CONFIGURATION, MinecraftPacket.Direction.TO_CLIENT,
+            0x05, new com.riege.rmc.minecraft.protocol.handler.configuration.PingConfigHandler());
+        handlerRegistry.register(ConnectionState.CONFIGURATION, MinecraftPacket.Direction.TO_CLIENT,
+            0x07, new com.riege.rmc.minecraft.protocol.handler.configuration.RegistryDataHandler());
+        handlerRegistry.register(ConnectionState.CONFIGURATION, MinecraftPacket.Direction.TO_CLIENT,
+            0x0B, new com.riege.rmc.minecraft.protocol.handler.configuration.TransferHandler());
+        handlerRegistry.register(ConnectionState.CONFIGURATION, MinecraftPacket.Direction.TO_CLIENT,
+            0x0C, new com.riege.rmc.minecraft.protocol.handler.configuration.FeatureFlagsHandler());
+        handlerRegistry.register(ConnectionState.CONFIGURATION, MinecraftPacket.Direction.TO_CLIENT,
+            0x0D, new com.riege.rmc.minecraft.protocol.handler.configuration.TagsHandler());
         handlerRegistry.register(ConnectionState.CONFIGURATION, MinecraftPacket.Direction.TO_CLIENT,
             0x0E, new com.riege.rmc.minecraft.protocol.handler.configuration.KnownPacksHandler());
 
         // Play state handlers
         handlerRegistry.register(ConnectionState.PLAY, MinecraftPacket.Direction.TO_CLIENT,
+            0x1D, new com.riege.rmc.minecraft.protocol.handler.play.DisconnectPlayHandler());
+        handlerRegistry.register(ConnectionState.PLAY, MinecraftPacket.Direction.TO_CLIENT,
             0x27, new com.riege.rmc.minecraft.protocol.handler.play.KeepAlivePlayHandler());
         handlerRegistry.register(ConnectionState.PLAY, MinecraftPacket.Direction.TO_CLIENT,
             0x2C, new com.riege.rmc.minecraft.protocol.handler.play.LoginPlayHandler());
         handlerRegistry.register(ConnectionState.PLAY, MinecraftPacket.Direction.TO_CLIENT,
-            0x1D, new com.riege.rmc.minecraft.protocol.handler.play.DisconnectPlayHandler());
+            0x7A, new com.riege.rmc.minecraft.protocol.handler.play.TransferPlayHandler());
     }
 
     public void connect(AuthenticatedProfile profile) throws Exception {
@@ -166,11 +184,14 @@ public final class ServerConnection {
     private void handleLoginSuccess(MinecraftConnection.PacketData packet) throws IOException {
         logger.accept("Login successful!");
 
-        currentState = ConnectionState.CONFIGURATION;
-        connection.setCurrentState(currentState);
-
+        // Send LOGIN_ACKNOWLEDGED while still in LOGIN state
         LoginAcknowledgedPacket loginAck = new LoginAcknowledgedPacket();
         connection.sendPacket(loginAck);
+        logger.accept("Sent login acknowledgement");
+
+        // NOW transition to CONFIGURATION state
+        currentState = ConnectionState.CONFIGURATION;
+        connection.setCurrentState(currentState);
         logger.accept("→ CONFIGURATION state");
 
         // Send client information
@@ -186,13 +207,28 @@ public final class ServerConnection {
 
     private void processConfigurationPhase() throws IOException {
         logger.accept("Processing configuration phase...");
+        int packetCount = 0;
         while (currentState == ConnectionState.CONFIGURATION && connection.isConnected()) {
-            MinecraftConnection.PacketData packet = connection.readPacket();
-            PacketHandler handler = handlerRegistry.getHandler(
-                currentState, MinecraftPacket.Direction.TO_CLIENT, packet.packetId()
-            );
-            handler.handle(packet, this);
+            try {
+                logger.accept("Waiting for configuration packet #" + (++packetCount) + "...");
+                MinecraftConnection.PacketData packet = connection.readPacket();
+                logger.accept("Received packet 0x" + Integer.toHexString(packet.packetId()) +
+                             " (" + packet.payload().length + " bytes)");
+
+                PacketHandler handler = handlerRegistry.getHandler(
+                    currentState, MinecraftPacket.Direction.TO_CLIENT, packet.packetId()
+                );
+
+                logger.accept("Handling packet with " + handler.getClass().getSimpleName());
+                handler.handle(packet, this);
+                logger.accept("Packet handled successfully");
+
+            } catch (IOException e) {
+                logger.accept("Error reading packet: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+                throw e;
+            }
         }
+        logger.accept("Configuration phase completed, state is now: " + currentState);
     }
 
     public void transitionToPlay() {
@@ -260,5 +296,22 @@ public final class ServerConnection {
 
     public PacketHandlerRegistry getHandlerRegistry() {
         return handlerRegistry;
+    }
+
+    public void setTransferTarget(String host, int port) {
+        this.transferHost = host;
+        this.transferPort = port;
+    }
+
+    public String getTransferHost() {
+        return transferHost;
+    }
+
+    public int getTransferPort() {
+        return transferPort;
+    }
+
+    public boolean hasTransferTarget() {
+        return transferHost != null;
     }
 }

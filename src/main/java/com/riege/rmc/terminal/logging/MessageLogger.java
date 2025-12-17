@@ -1,6 +1,6 @@
 package com.riege.rmc.terminal.logging;
 
-import com.riege.rmc.terminal.command.bridge.RustTerminal;
+import com.riege.rmc.terminal.Terminal;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -10,15 +10,15 @@ public final class MessageLogger {
 
     private final int maxCapacity;
     private final LinkedList<Message> messages;
-    private static RustTerminal rustBridge = null;
+    private static Terminal terminal = null;
 
     public MessageLogger(final int maxCapacity) {
         this.maxCapacity = maxCapacity;
         this.messages = new LinkedList<>();
     }
 
-    public static void setRustBridge(RustTerminal bridge) {
-        rustBridge = bridge;
+    public static void setTerminal(Terminal term) {
+        terminal = term;
     }
 
     public void log(final String content, final MessageType type) {
@@ -47,14 +47,14 @@ public final class MessageLogger {
     public void clear() { synchronized(messages) { messages.clear(); } }
     public List<Message> getRecentMessages() { synchronized(messages) { return new ArrayList<>(messages); } }
     private void printToSystemOut(final Message message) {
-        if (rustBridge != null) {
+        if (terminal != null) {
             String txt = message.getContent();
             switch (message.getType()) {
-                case ERROR -> rustBridge.terminal_log_error(txt);
-                case SUCCESS -> rustBridge.terminal_log_success(txt);
-                case WARNING -> rustBridge.terminal_log_warning(txt);
-                case DEBUG -> rustBridge.terminal_log_debug(txt);
-                case INFO, PLAIN -> rustBridge.terminal_log_info(txt);
+                case ERROR -> terminal.logError(txt);
+                case SUCCESS -> terminal.logSuccess(txt);
+                case WARNING -> terminal.logWarning(txt);
+                case DEBUG -> terminal.logDebug(txt);
+                case INFO, PLAIN -> terminal.logInfo(txt);
             }
         } else {
             System.out.println("[" + message.getType() + "] " + message.getContent());

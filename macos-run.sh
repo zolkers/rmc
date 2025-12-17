@@ -38,35 +38,39 @@ init_gradlew() {
     fi
 }
 
-find_java21() {
+find_java21_or_higher() {
     # Unset any existing JAVA_HOME to start fresh
     unset JAVA_HOME
 
-    # Check if java in PATH is version 21
+    # Check if java in PATH is version 21 or higher
     if command -v java &> /dev/null; then
         JAVA_VERSION=$(java -version 2>&1 | head -1 | cut -d'"' -f2 | cut -d'.' -f1)
-        if [ "$JAVA_VERSION" = "21" ]; then
-            # Found Java 21 in PATH, set JAVA_HOME
+        if [ "$JAVA_VERSION" -ge "21" ]; then
+            # Found Java 21+ in PATH, set JAVA_HOME
             # shellcheck disable=SC2046
             JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
             export JAVA_HOME
             export PATH="$JAVA_HOME/bin:$PATH"
+            echo -e "${C4}Found Java $JAVA_VERSION at: $JAVA_HOME${RESET}"
             return 0
         fi
     fi
 
-    # Search common Java 21 installation directories on macOS
-    for dir in \
-        "/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home" \
-        "/Library/Java/JavaVirtualMachines/openjdk-21.jdk/Contents/Home" \
-        "$HOME/.sdkman/candidates/java/21.0.2-tem" \
-        "$HOME/.jenv/versions/21" ; do
-        if [ -d "$dir" ] && [ -x "$dir/bin/java" ]; then
-            export JAVA_HOME="$dir"
-            export PATH="$JAVA_HOME/bin:$PATH"
-            echo -e "${C4}Found Java 21 at: $JAVA_HOME${RESET}"
-            return 0
-        fi
+    # Search common Java installation directories on macOS (21 and higher)
+    for version in {21..25}; do
+        for dir in \
+            "/Library/Java/JavaVirtualMachines/temurin-${version}.jdk/Contents/Home" \
+            "/Library/Java/JavaVirtualMachines/openjdk-${version}.jdk/Contents/Home" \
+            "$HOME/.sdkman/candidates/java/${version}.0.2-tem" \
+            "$HOME/.jenv/versions/${version}" ; do
+            if [ -d "$dir" ] && [ -x "$dir/bin/java" ]; then
+                export JAVA_HOME="$dir"
+                export PATH="$JAVA_HOME/bin:$PATH"
+                JAVA_VERSION=$($JAVA_HOME/bin/java -version 2>&1 | head -1 | cut -d'"' -f2 | cut -d'.' -f1)
+                echo -e "${C4}Found Java $JAVA_VERSION at: $JAVA_HOME${RESET}"
+                return 0
+            fi
+        done
     done
 
     return 1
@@ -75,20 +79,20 @@ find_java21() {
 # Initialize environment
 init_gradlew
 
-# Try to find Java 21
-if ! find_java21; then
-    echo -e "${C3}Java 21 not found. Attempting to install using Homebrew...${RESET}"
+# Try to find Java 21 or higher
+if ! find_java21_or_higher; then
+    echo -e "${C3}Java 21+ not found. Attempting to install using Homebrew...${RESET}"
     if command -v brew &> /dev/null; then
         brew install openjdk@21
-        find_java21
+        find_java21_or_higher
     else
-        echo -e "${C3}Error: Java 21 is required but not found.${RESET}"
-        echo -e "${C3}Please install Java 21 manually.${RESET}"
+        echo -e "${C3}Error: Java 21+ is required but not found.${RESET}"
+        echo -e "${C3}Please install Java 21 or a higher version manually.${RESET}"
         exit 1
     fi
 fi
 
-echo -e "${C4}JVM version info: 21${RESET}"
+echo -e "${C4}JVM version info: 21+${RESET}"
 echo -e "${C4}Building for MC 1.21.4${RESET}"
 echo
 sleep 0.5

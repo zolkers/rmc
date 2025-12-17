@@ -1,7 +1,8 @@
 package com.riege.rmc;
 
 import com.riege.rmc.api.RMCApi;
-import com.riege.rmc.terminal.command.bridge.RustTerminal;
+import com.riege.rmc.terminal.Terminal;
+import com.riege.rmc.terminal.TerminalFactory;
 import com.riege.rmc.terminal.command.core.CommandManager;
 import com.riege.rmc.terminal.command.impl.AuthCommand;
 import com.riege.rmc.terminal.command.impl.ConnectCommand;
@@ -37,46 +38,46 @@ public class Main {
         manager.register(new StatusCommand());
 
         try {
-            System.out.println("[DEBUG] Loading Rust terminal library...");
-            RustTerminal terminal = RustTerminal.INSTANCE;
-            System.out.println("[DEBUG] Rust terminal loaded successfully");
+            System.out.println("[DEBUG] Creating terminal...");
+            Terminal terminal = TerminalFactory.create();
+            System.out.println("[DEBUG] Terminal created successfully");
 
-            MessageLogger.setRustBridge(terminal);
-            System.out.println("[DEBUG] Message logger bridge set");
+            MessageLogger.setTerminal(terminal);
+            System.out.println("[DEBUG] Message logger terminal set");
 
-            RustTerminal.NativeCallback onInput = (input) -> {
+            Terminal.NativeCallback onInput = (input) -> {
                 if (input.equalsIgnoreCase("exit")) {
-                    terminal.terminal_close();
+                    terminal.close();
                     System.exit(0);
                 } else {
                     manager.execute(input);
                 }
             };
 
-            RustTerminal.NativeCallback onTab = (buffer) -> {
+            Terminal.NativeCallback onTab = (buffer) -> {
                 List<String> matches = manager.getFramework().getRegistry().findMatchingCommands(buffer);
                 for (String match : matches) {
-                    terminal.terminal_add_candidate(match);
+                    terminal.addCandidate(match);
                 }
             };
 
             System.out.println("[DEBUG] Registering callbacks...");
-            terminal.terminal_register_input_callback(onInput);
-            terminal.terminal_register_tab_callback(onTab);
+            terminal.registerInputCallback(onInput);
+            terminal.registerTabCallback(onTab);
             System.out.println("[DEBUG] Callbacks registered");
 
             Logger.success("Backend initialised");
 
             System.out.println("[DEBUG] Starting terminal thread...");
-            Thread rustThread = new Thread(terminal::terminal_start, "riege-xterm-frontend");
-            rustThread.start();
+            Thread terminalThread = new Thread(terminal::start, "riege-xterm-frontend");
+            terminalThread.start();
             System.out.println("[DEBUG] Terminal thread started, waiting for it to complete...");
 
-            rustThread.join();
+            terminalThread.join();
             System.out.println("[DEBUG] Terminal thread completed");
 
         } catch (Throwable e) {
-            System.err.println("Critical error, cannot load riege-xterm.");
+            System.err.println("Critical error, cannot load terminal.");
             System.err.println(e.getMessage());
             e.printStackTrace();
         }

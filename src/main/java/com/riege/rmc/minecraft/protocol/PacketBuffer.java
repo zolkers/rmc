@@ -34,8 +34,16 @@ public final class PacketBuffer {
         dos.writeShort(value);
     }
 
+    public void writeInt(int value) throws IOException {
+        dos.writeInt(value);
+    }
+
     public void writeLong(long value) throws IOException {
         dos.writeLong(value);
+    }
+
+    public void writeByte(int value) throws IOException {
+        dos.writeByte(value);
     }
 
     public void writeBoolean(boolean value) throws IOException {
