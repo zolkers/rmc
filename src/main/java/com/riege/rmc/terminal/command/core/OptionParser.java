@@ -20,12 +20,12 @@ public final class OptionParser {
     public static class ParseResult {
         private final List<String> positionalArgs;
         private final Map<String, String> options;
-        private final Set<String> flags;
+        private final Map<String, Integer> flagCounts;
 
         public ParseResult() {
             this.positionalArgs = new ArrayList<>();
             this.options = new HashMap<>();
-            this.flags = new HashSet<>();
+            this.flagCounts = new HashMap<>();
         }
 
         public List<String> getPositionalArgs() {
@@ -36,8 +36,8 @@ public final class OptionParser {
             return options;
         }
 
-        public Set<String> getFlags() {
-            return flags;
+        public Map<String, Integer> getFlagCounts() {
+            return flagCounts;
         }
 
         public String getOption(String name) {
@@ -49,11 +49,19 @@ public final class OptionParser {
         }
 
         public boolean hasFlag(String name) {
-            return flags.contains(name);
+            return flagCounts.containsKey(name);
+        }
+
+        public int getFlagCount(String name) {
+            return flagCounts.getOrDefault(name, 0);
         }
 
         public boolean hasOption(String name) {
             return options.containsKey(name);
+        }
+
+        void incrementFlag(String name) {
+            flagCounts.put(name, flagCounts.getOrDefault(name, 0) + 1);
         }
     }
 
@@ -80,7 +88,7 @@ public final class OptionParser {
                         result.options.put(optionPart, args[i + 1]);
                         i++;
                     } else {
-                        result.flags.add(optionPart);
+                        result.incrementFlag(optionPart);
                     }
                 }
             } else if (arg.startsWith("-") && arg.length() > 1) {
@@ -96,8 +104,9 @@ public final class OptionParser {
                     }
 
                     if (allSingleChar) {
+                        // Handle -vvv as three -v flags (counted)
                         for (char c : optionName.toCharArray()) {
-                            result.flags.add(String.valueOf(c));
+                            result.incrementFlag(String.valueOf(c));
                         }
                         continue;
                     }
@@ -107,7 +116,7 @@ public final class OptionParser {
                     result.options.put(optionName, args[i + 1]);
                     i++;
                 } else {
-                    result.flags.add(optionName);
+                    result.incrementFlag(optionName);
                 }
             } else {
                 result.positionalArgs.add(arg);

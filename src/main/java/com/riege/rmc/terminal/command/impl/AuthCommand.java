@@ -65,7 +65,7 @@ public final class AuthCommand extends BaseCommand {
                 error(ctx, "Authentication failed: " + e.getMessage());
             } catch (Exception e) {
                 error(ctx, "Unexpected error: " + e.getMessage());
-                System.err.println(e.getMessage());
+                error(ctx, e.getMessage());
             }
         });
 

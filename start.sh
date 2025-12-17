@@ -28,6 +28,7 @@ sleep 0.5
 echo -e "${C5}Building shadow JAR...${RESET}"
 ./gradlew shadowJar -q
 
+# shellcheck disable=SC2181
 if [ $? -ne 0 ]; then
     echo -e "${C3}Build failed!${RESET}"
     exit 1

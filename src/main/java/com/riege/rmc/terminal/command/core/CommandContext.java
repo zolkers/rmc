@@ -574,6 +574,19 @@ public final class CommandContext {
     }
 
     /**
+     * Gets the count of a repeatable flag.
+     * <p>
+     * For example, -v returns 1, -vv returns 2, -vvv returns 3.
+     * </p>
+     *
+     * @param name the flag name
+     * @return the number of times the flag was specified (0 if not present)
+     */
+    public int getFlagCount(final String name) {
+        return options.getFlagCount(name);
+    }
+
+    /**
      * Gets all options.
      *
      * @return unmodifiable map of options
@@ -585,10 +598,19 @@ public final class CommandContext {
     /**
      * Gets all flags.
      *
-     * @return unmodifiable set of flags
+     * @return unmodifiable set of flag names
      */
     public Set<String> getAllFlags() {
-        return Collections.unmodifiableSet(options.getFlags());
+        return Collections.unmodifiableSet(options.getFlagCounts().keySet());
+    }
+
+    /**
+     * Gets all flag counts.
+     *
+     * @return unmodifiable map of flag names to counts
+     */
+    public Map<String, Integer> getAllFlagCounts() {
+        return Collections.unmodifiableMap(options.getFlagCounts());
     }
 
     // ========== Utility Methods ==========

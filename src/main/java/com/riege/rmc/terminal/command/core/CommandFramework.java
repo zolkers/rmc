@@ -241,24 +241,29 @@ public final class CommandFramework {
             Parameter param = parameters[i];
             Class<?> type = param.getType();
 
-            // 1. Inject Context
             if (type.equals(CommandContext.class)) {
                 args[i] = ctx;
                 continue;
             }
 
-            // 2. Inject Flag (@Flag boolean silent)
             Flag flagAnn = param.getAnnotation(Flag.class);
             if (flagAnn != null) {
-                boolean hasFlag = ctx.hasFlag(flagAnn.name());
-                if (!hasFlag && !flagAnn.shortName().isEmpty()) {
-                    hasFlag = ctx.hasFlag(flagAnn.shortName());
+                if (flagAnn.repeatable()) {
+                    int count = ctx.getFlagCount(flagAnn.name());
+                    if (count == 0 && !flagAnn.shortName().isEmpty()) {
+                        count = ctx.getFlagCount(flagAnn.shortName());
+                    }
+                    args[i] = count;
+                } else {
+                    boolean hasFlag = ctx.hasFlag(flagAnn.name());
+                    if (!hasFlag && !flagAnn.shortName().isEmpty()) {
+                        hasFlag = ctx.hasFlag(flagAnn.shortName());
+                    }
+                    args[i] = hasFlag;
                 }
-                args[i] = hasFlag;
                 continue;
             }
 
-            // 3. Inject Option (@Option String reason)
             Option optAnn = param.getAnnotation(Option.class);
             if (optAnn != null) {
                 String value = ctx.getOption(optAnn.name());
@@ -266,32 +271,27 @@ public final class CommandFramework {
                     value = ctx.getOption(optAnn.shortName());
                 }
 
-                // Handle defaults and requirements
                 if (value == null) {
                     if (optAnn.required()) {
                         throw new IllegalArgumentException("Missing required option: --" + optAnn.name());
                     }
                     value = optAnn.defaultValue();
-                    if (value.isEmpty()) value = null; // Handle empty default as null if possible
+                    if (value.isEmpty()) value = null;
                 }
 
                 args[i] = convertType(value, type);
                 continue;
             }
 
-            // 4. Inject Argument (Positional)
             Argument argAnn = param.getAnnotation(Argument.class);
 
-            // If argument is present but index is out of bounds
             if (positionalArgIndex >= ctx.getArgs().length) {
                 if (argAnn != null && !argAnn.defaultValue().isEmpty()) {
                     args[i] = convertType(argAnn.defaultValue(), type);
                 } else if (argAnn != null && !argAnn.required()) {
                     args[i] = getDefaultValue(type);
                 } else {
-                    // Try to inject null or default primitive, but strictly this is an error
-                    // unless the method signature allows it. 
-                    // However, we usually rely on @Command(minArgs) for strict checking.
+
                     args[i] = getDefaultValue(type);
                 }
             } else {

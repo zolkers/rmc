@@ -7,6 +7,7 @@ import com.riege.rmc.minecraft.microsoft.AuthenticatedProfile;
 import com.riege.rmc.persistence.dto.AppSettings;
 import com.riege.rmc.persistence.dto.PersistedProfile;
 import com.riege.rmc.persistence.dto.ServerFavorite;
+import com.riege.rmc.terminal.logging.Logger;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -58,7 +59,7 @@ public class PersistenceManager {
 
             return Optional.of(persisted.toAuthenticatedProfile());
         } catch (Exception e) {
-            System.err.println("Failed to load profile: " + e.getMessage());
+            Logger.error("Failed to load profile: " + e.getMessage());
             return Optional.empty();
         }
     }
@@ -87,7 +88,7 @@ public class PersistenceManager {
             List<ServerFavorite> servers = gson.fromJson(json, listType);
             return servers != null ? servers : new ArrayList<>();
         } catch (Exception e) {
-            System.err.println("Failed to load servers: " + e.getMessage());
+            Logger.error("Failed to load servers: " + e.getMessage());
             return new ArrayList<>();
         }
     }
@@ -150,7 +151,7 @@ public class PersistenceManager {
             AppSettings settings = gson.fromJson(json, AppSettings.class);
             return settings != null ? settings : AppSettings.defaults();
         } catch (Exception e) {
-            System.err.println("Failed to load settings: " + e.getMessage());
+            Logger.error("Failed to load settings: " + e.getMessage());
             return AppSettings.defaults();
         }
     }

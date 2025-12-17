@@ -139,7 +139,13 @@ public final class ServerConnection {
             successPacket = connection.readPacket();
             if (successPacket.packetId() == 0x02) {
                 handleLoginSuccess(successPacket);
+            } else {
+                throw new IOException("Expected LOGIN_SUCCESS (0x02) after compression, got: 0x" +
+                    Integer.toHexString(successPacket.packetId()));
             }
+        } else {
+            throw new IOException("Expected LOGIN_SUCCESS (0x02) or SET_COMPRESSION (0x03) after encryption, got: 0x" +
+                Integer.toHexString(successPacket.packetId()));
         }
     }
 
@@ -151,8 +157,8 @@ public final class ServerConnection {
     private void handleSetCompression(MinecraftConnection.PacketData packet) throws IOException {
         DataInputStream data = packet.getDataStream();
         int threshold = VarInt.readVarInt(data);
+        connection.enableCompression(threshold);
         logger.accept("Compression enabled with threshold: " + threshold);
-        // TODO: Implement compression support
     }
 
     private void handleLoginSuccess(MinecraftConnection.PacketData packet) throws IOException {

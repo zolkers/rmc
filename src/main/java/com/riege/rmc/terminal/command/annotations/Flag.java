@@ -70,4 +70,15 @@ public @interface Flag {
      * @return the description
      */
     String description() default "";
+
+    /**
+     * Whether this flag is repeatable (counts occurrences).
+     * <p>
+     * When true, the parameter type should be int instead of boolean.
+     * Example: -v (count=1), -vv (count=2), -vvv (count=3)
+     * </p>
+     *
+     * @return true if repeatable
+     */
+    boolean repeatable() default false;
 }
