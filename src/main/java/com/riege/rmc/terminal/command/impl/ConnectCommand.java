@@ -1,7 +1,7 @@
 package com.riege.rmc.terminal.command.impl;
 
-import com.riege.rmc.minecraft.SessionManager;
-import com.riege.rmc.minecraft.protocol.ServerConnection;
+import com.riege.rmc.api.RMCApi;
+import com.riege.rmc.api.connection.ConnectionResult;
 import com.riege.rmc.terminal.command.annotations.Argument;
 import com.riege.rmc.terminal.command.annotations.Command;
 import com.riege.rmc.terminal.command.annotations.CommandHandler;
@@ -16,6 +16,7 @@ import com.riege.rmc.terminal.command.core.CommandContext;
     minArgs = 1
 )
 public final class ConnectCommand extends BaseCommand {
+    private final RMCApi api = RMCApi.getInstance();
 
     @CommandHandler
     public void execute(
@@ -23,49 +24,56 @@ public final class ConnectCommand extends BaseCommand {
         @Argument(name = "address", description = "Server address (host:port)") String address,
         @Flag(name = "v", description = "Verbose packet logging (repeatable: -v, -vv, -vvv)", repeatable = true) int verbosity
     ) {
-        if (!SessionManager.isAuthenticated()) {
-            error(ctx, "You must authenticate first. Use 'auth' command.");
-            return;
-        }
-
         if (verbosity > 0) {
             String level = verbosity == 1 ? "basic" : verbosity == 2 ? "detailed" : "complete with hex dumps";
             info(ctx, "Verbose mode enabled (level " + verbosity + " - " + level + ")");
         }
 
-        info(ctx, "Username: " + SessionManager.getProfile().username());
         msg(ctx, "");
 
-        Thread connectionThread = createConnectionThread(ctx, address, verbosity);
-        connectionThread.start();
+        // Connect asynchronously
+        api.connection().connectAsync(
+            address,
+            verbosity,
+            // Status updates
+            message -> msg(ctx, message),
+
+            // Result handler
+            result -> handleConnectionResult(ctx, result)
+        );
     }
 
-    private Thread createConnectionThread(CommandContext ctx, String address, int verbosity) {
-        Thread connectionThread = new Thread(() -> {
-            try {
-                ServerConnection serverConn =
-                        new ServerConnection(
-                                address,
-                                message -> msg(ctx, message),
-                                verbosity
-                        );
+    private void handleConnectionResult(CommandContext ctx, ConnectionResult result) {
+        msg(ctx, "");
 
-                serverConn.connect(SessionManager.getProfile());
-
-                msg(ctx, "");
+        switch (result) {
+            case ConnectionResult.Success success -> {
                 success(ctx, "You are now connected to the server!");
-
-            } catch (Exception e) {
-                error(ctx, "Connection failed: " + (e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName()));
-                if (e.getCause() != null) {
-                    error(ctx, "Cause: " + e.getCause().getMessage());
-                }
-                // Print stack trace for debugging
-                e.printStackTrace();
+                info(ctx, "Server: " + success.serverAddress());
+                info(ctx, "User: " + success.username());
             }
-        });
 
-        connectionThread.setDaemon(true);
-        return connectionThread;
+            case ConnectionResult.NotAuthenticated notAuth -> {
+                error(ctx, "You must authenticate first. Use 'auth' command.");
+            }
+
+            case ConnectionResult.Failure failure -> {
+                error(ctx, "Connection failed: " + failure.errorMessage());
+                if (failure.cause() != null && failure.cause().getCause() != null) {
+                    error(ctx, "Cause: " + failure.cause().getCause().getMessage());
+                }
+            }
+
+            case ConnectionResult.InProgress inProgress -> {
+                // Shouldn't happen in final result
+                info(ctx, inProgress.statusMessage());
+            }
+
+            case ConnectionResult.Disconnected disconnected -> {
+                warning(ctx, "Disconnected from " + disconnected.serverAddress());
+            }
+        }
+
+        msg(ctx, "");
     }
 }
