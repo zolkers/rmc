@@ -14,6 +14,13 @@ public final class PacketHandlerRegistry {
         this.defaultHandler = defaultHandler;
     }
 
+    public void register(MinecraftPacket packet, PacketHandler handler) {
+        ConnectionState state = ConnectionState.valueOf(packet.getState().name());
+        String key = makeKey(state, packet.getDirection(), packet.getPacketId());
+        handlers.put(key, handler);
+    }
+
+    @Deprecated
     public void register(ConnectionState state, MinecraftPacket.Direction direction,
                         int packetId, PacketHandler handler) {
         String key = makeKey(state, direction, packetId);

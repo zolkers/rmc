@@ -7,7 +7,7 @@ import com.riege.rmc.minecraft.protocol.PacketBuffer;
 import java.io.IOException;
 
 public record HandshakePacket(String serverAddress, int serverPort, NextState nextState) implements Packet {
-    private static final int PROTOCOL_VERSION = 767; // Minecraft 1.21.4
+    private static final int PROTOCOL_VERSION = 769; // Minecraft 1.21.4
 
     @Override
     public void write(PacketBuffer buffer) throws IOException {

@@ -38,20 +38,50 @@ public final class MinecraftConnection implements AutoCloseable {
 
     public void sendPacket(Packet packet) throws IOException {
         PacketBuffer buffer = new PacketBuffer();
-
         buffer.writeVarInt(packet.getPacketId());
-
         packet.write(buffer);
-
         byte[] packetData = buffer.toByteArray();
 
-        PacketBuffer lengthBuffer = new PacketBuffer();
-        lengthBuffer.writeVarInt(packetData.length);
+        if (compressionThreshold >= 0) {
+            // Compression is enabled
+            if (packetData.length >= compressionThreshold) {
+                // Compress the packet
+                byte[] compressed = compress(packetData);
 
-        byte[] lengthBytes = lengthBuffer.toByteArray();
+                PacketBuffer outBuffer = new PacketBuffer();
+                outBuffer.writeVarInt(packetData.length); // Data Length (uncompressed size)
+                outBuffer.writeBytes(compressed); // Compressed data
 
-        output.write(lengthBytes);
-        output.write(packetData);
+                byte[] fullPacket = outBuffer.toByteArray();
+
+                PacketBuffer lengthBuffer = new PacketBuffer();
+                lengthBuffer.writeVarInt(fullPacket.length);
+
+                output.write(lengthBuffer.toByteArray());
+                output.write(fullPacket);
+            } else {
+                // Don't compress, but still include Data Length = 0
+                PacketBuffer outBuffer = new PacketBuffer();
+                outBuffer.writeVarInt(0); // Data Length = 0 (uncompressed)
+                outBuffer.writeBytes(packetData); // Uncompressed packet
+
+                byte[] fullPacket = outBuffer.toByteArray();
+
+                PacketBuffer lengthBuffer = new PacketBuffer();
+                lengthBuffer.writeVarInt(fullPacket.length);
+
+                output.write(lengthBuffer.toByteArray());
+                output.write(fullPacket);
+            }
+        } else {
+            // No compression
+            PacketBuffer lengthBuffer = new PacketBuffer();
+            lengthBuffer.writeVarInt(packetData.length);
+
+            output.write(lengthBuffer.toByteArray());
+            output.write(packetData);
+        }
+
         output.flush();
 
         if (packetLogger != null) {
@@ -171,6 +201,14 @@ public final class MinecraftConnection implements AutoCloseable {
 
     public boolean isConnected() {
         return socket != null && socket.isConnected() && !socket.isClosed();
+    }
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public ConnectionState getCurrentState() {
+        return currentState;
     }
 
     @Override
