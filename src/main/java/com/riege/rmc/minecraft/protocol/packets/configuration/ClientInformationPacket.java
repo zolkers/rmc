@@ -10,7 +10,7 @@ import java.io.IOException;
  * Sent by client to inform server about client settings.
  * Packet ID: 0x00 in CONFIGURATION state (Client to Server)
  */
-public class ClientInformationPacket implements Packet {
+public final class ClientInformationPacket implements Packet {
 
     private final String locale;
     private final byte viewDistance;
@@ -24,10 +24,10 @@ public class ClientInformationPacket implements Packet {
     public ClientInformationPacket() {
         this.locale = "en_US";
         this.viewDistance = 10;
-        this.chatMode = 0; // Enabled
+        this.chatMode = 0;
         this.chatColors = true;
-        this.displayedSkinParts = (byte) 0x7F; // All parts visible
-        this.mainHand = 1; // Right hand
+        this.displayedSkinParts = (byte) 0x7F;
+        this.mainHand = 1;
         this.textFilteringEnabled = false;
         this.allowServerListings = true;
     }

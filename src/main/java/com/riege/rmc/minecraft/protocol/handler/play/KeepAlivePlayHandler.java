@@ -9,7 +9,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-public class KeepAlivePlayHandler implements PacketHandler {
+public final class KeepAlivePlayHandler implements PacketHandler {
 
     @Override
     public void handle(MinecraftConnection.PacketData packet, ServerConnection connection) throws IOException {
@@ -20,7 +20,6 @@ public class KeepAlivePlayHandler implements PacketHandler {
             connection.getKeepAliveManager().recordKeepAlive(keepAliveId);
         }
 
-        // Respond with the same keep-alive ID
         KeepAlivePlayPacket response = new KeepAlivePlayPacket(keepAliveId);
         connection.getConnection().sendPacket(response);
     }

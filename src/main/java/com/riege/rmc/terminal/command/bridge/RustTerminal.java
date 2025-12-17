@@ -12,10 +12,8 @@ public interface RustTerminal extends Library {
 
     static String getLibraryName() {
         String os = System.getProperty("os.name").toLowerCase();
-        if (os.contains("win")) {
-            return "riege_xterm.dll";
-        } else if (os.contains("mac")) {
-            return "libriege_xterm.dylib";
+        if (os.contains("win") || os.contains("mac")) {
+            return "fallback";
         } else {
             return "libriege_xterm.so";
         }

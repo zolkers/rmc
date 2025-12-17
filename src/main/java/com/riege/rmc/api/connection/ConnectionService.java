@@ -11,7 +11,7 @@ import java.util.function.Consumer;
  * Service for managing Minecraft server connections.
  * Handles connection lifecycle, encryption, and protocol negotiation.
  */
-public class ConnectionService {
+public final class ConnectionService {
     private final SessionService sessionService;
     private ServerConnection currentConnection;
 

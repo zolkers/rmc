@@ -28,7 +28,6 @@ public final class CommandFramework {
     private final List<CommandMiddleware> globalMiddlewares;
     private final RouterScanner routerScanner;
 
-    // Default permission provider (allows everything by default)
     private PermissionProvider permissionProvider = (sender, node) -> true;
 
     private static final String DEFAULT_SENDER = "console";

@@ -6,7 +6,7 @@ import com.riege.rmc.minecraft.protocol.ConnectionState;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PacketHandlerRegistry {
+public final class PacketHandlerRegistry {
     private final Map<String, PacketHandler> handlers = new ConcurrentHashMap<>();
     private final PacketHandler defaultHandler;
 

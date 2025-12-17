@@ -14,13 +14,10 @@ import java.security.GeneralSecurityException;
 import java.util.zip.Inflater;
 import java.util.zip.Deflater;
 
-public class MinecraftConnection implements AutoCloseable {
+public final class MinecraftConnection implements AutoCloseable {
     private final Socket socket;
     private DataInputStream input;
     private DataOutputStream output;
-    private boolean encrypted = false;
-    private Cipher encryptCipher;
-    private Cipher decryptCipher;
     private PacketLogger packetLogger;
     private ConnectionState currentState = ConnectionState.HANDSHAKING;
     private int compressionThreshold = -1; // -1 means no compression
@@ -74,12 +71,10 @@ public class MinecraftConnection implements AutoCloseable {
 
         DataInputStream dataStream = new DataInputStream(new ByteArrayInputStream(packetData));
 
-        // Handle compression if enabled
         if (compressionThreshold >= 0) {
             int dataLength = VarInt.readVarInt(dataStream);
 
             if (dataLength == 0) {
-                // Not compressed, read normally
                 int packetId = VarInt.readVarInt(dataStream);
                 int remaining = packetLength - VarInt.getVarIntSize(dataLength) - VarInt.getVarIntSize(packetId);
                 byte[] payload = new byte[remaining];
@@ -91,7 +86,6 @@ public class MinecraftConnection implements AutoCloseable {
                 }
                 return packet;
             } else {
-                // Compressed, decompress first
                 int compressedSize = packetLength - VarInt.getVarIntSize(dataLength);
                 byte[] compressedData = new byte[compressedSize];
                 dataStream.readFully(compressedData);
@@ -99,46 +93,37 @@ public class MinecraftConnection implements AutoCloseable {
                 byte[] decompressedData = decompress(compressedData, dataLength);
                 DataInputStream decompressedStream = new DataInputStream(new ByteArrayInputStream(decompressedData));
 
-                int packetId = VarInt.readVarInt(decompressedStream);
-                int remaining = dataLength - VarInt.getVarIntSize(packetId);
-                byte[] payload = new byte[remaining];
-                decompressedStream.readFully(payload);
-
-                PacketData packet = new PacketData(packetId, payload);
-                if (packetLogger != null) {
-                    packetLogger.logIncoming(packet, currentState);
-                }
-                return packet;
+                return getPacketData(dataLength, decompressedStream);
             }
         } else {
-            // No compression
-            int packetId = VarInt.readVarInt(dataStream);
-            int remaining = packetLength - VarInt.getVarIntSize(packetId);
-            byte[] payload = new byte[remaining];
-            dataStream.readFully(payload);
-
-            PacketData packet = new PacketData(packetId, payload);
-            if (packetLogger != null) {
-                packetLogger.logIncoming(packet, currentState);
-            }
-            return packet;
+            return getPacketData(packetLength, dataStream);
         }
+    }
+
+    private PacketData getPacketData(int dataLength, DataInputStream decompressedStream) throws IOException {
+        int packetId = VarInt.readVarInt(decompressedStream);
+        int remaining = dataLength - VarInt.getVarIntSize(packetId);
+        byte[] payload = new byte[remaining];
+        decompressedStream.readFully(payload);
+
+        PacketData packet = new PacketData(packetId, payload);
+        if (packetLogger != null) {
+            packetLogger.logIncoming(packet, currentState);
+        }
+        return packet;
     }
 
     public void enableEncryption(byte[] sharedSecret) throws GeneralSecurityException, IOException {
         SecretKey key = new SecretKeySpec(sharedSecret, "AES");
 
-        encryptCipher = Cipher.getInstance("AES/CFB8/NoPadding");
+        Cipher encryptCipher = Cipher.getInstance("AES/CFB8/NoPadding");
         encryptCipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(sharedSecret));
 
-        decryptCipher = Cipher.getInstance("AES/CFB8/NoPadding");
+        Cipher decryptCipher = Cipher.getInstance("AES/CFB8/NoPadding");
         decryptCipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(sharedSecret));
 
-        // Wrap the existing streams with cipher streams
         this.output = new DataOutputStream(new BufferedOutputStream(new CipherOutputStream(socket.getOutputStream(), encryptCipher)));
         this.input = new DataInputStream(new BufferedInputStream(new CipherInputStream(socket.getInputStream(), decryptCipher)));
-
-        this.encrypted = true;
     }
 
     public void enableCompression(int threshold) {
@@ -164,7 +149,7 @@ public class MinecraftConnection implements AutoCloseable {
         return result;
     }
 
-    private byte[] compress(byte[] data) throws IOException {
+    private byte[] compress(byte[] data) {
         Deflater deflater = new Deflater();
         deflater.setInput(data);
         deflater.finish();

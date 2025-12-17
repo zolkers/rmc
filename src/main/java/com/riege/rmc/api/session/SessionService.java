@@ -10,7 +10,7 @@ import java.util.Optional;
  * Service for managing user sessions.
  * Handles authentication state, profile persistence, and session validation.
  */
-public class SessionService {
+public final class SessionService {
     private final PersistenceManager persistenceManager;
 
     public SessionService() {

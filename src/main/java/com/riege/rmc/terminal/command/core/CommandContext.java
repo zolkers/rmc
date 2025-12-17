@@ -238,16 +238,18 @@ public final class CommandContext {
      */
     public boolean getArgAsBoolean(final int index, final boolean defaultValue) {
         return getArgOptional(index)
-                .map(arg -> {
-                    final String lower = arg.toLowerCase();
-                    if ("true".equals(lower) || "yes".equals(lower) || "1".equals(lower) || "on".equals(lower)) {
-                        return true;
-                    } else if ("false".equals(lower) || "no".equals(lower) || "0".equals(lower) || "off".equals(lower)) {
-                        return false;
-                    }
-                    return defaultValue;
-                })
+                .map(arg -> getaBoolean(defaultValue, arg))
                 .orElse(defaultValue);
+    }
+
+    private Boolean getaBoolean(boolean defaultValue, String arg) {
+        final String lower = arg.toLowerCase();
+        if ("true".equals(lower) || "yes".equals(lower) || "1".equals(lower) || "on".equals(lower)) {
+            return true;
+        } else if ("false".equals(lower) || "no".equals(lower) || "0".equals(lower) || "off".equals(lower)) {
+            return false;
+        }
+        return defaultValue;
     }
 
     /**
@@ -544,13 +546,7 @@ public final class CommandContext {
         if (value == null) {
             return defaultValue;
         }
-        final String lower = value.toLowerCase();
-        if ("true".equals(lower) || "yes".equals(lower) || "1".equals(lower) || "on".equals(lower)) {
-            return true;
-        } else if ("false".equals(lower) || "no".equals(lower) || "0".equals(lower) || "off".equals(lower)) {
-            return false;
-        }
-        return defaultValue;
+        return getaBoolean(defaultValue, value);
     }
 
     /**

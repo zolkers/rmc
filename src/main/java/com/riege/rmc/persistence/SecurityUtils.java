@@ -12,7 +12,7 @@ import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
 
-public class SecurityUtils {
+public final class SecurityUtils {
     private static final String ALGORITHM = "AES/GCM/NoPadding";
     private static final int KEY_SIZE = 256;
     private static final int IV_SIZE = 12;
@@ -28,7 +28,6 @@ public class SecurityUtils {
 
         byte[] ciphertext = cipher.doFinal(plaintext.getBytes(StandardCharsets.UTF_8));
 
-        // Combine IV + ciphertext
         byte[] result = new byte[IV_SIZE + ciphertext.length];
         System.arraycopy(iv, 0, result, 0, IV_SIZE);
         System.arraycopy(ciphertext, 0, result, IV_SIZE, ciphertext.length);
@@ -37,7 +36,6 @@ public class SecurityUtils {
     }
 
     public static String decrypt(byte[] encrypted) throws Exception {
-        // Extract IV
         byte[] iv = Arrays.copyOfRange(encrypted, 0, IV_SIZE);
         byte[] ciphertext = Arrays.copyOfRange(encrypted, IV_SIZE, encrypted.length);
 

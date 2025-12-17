@@ -13,7 +13,7 @@ import java.util.function.Consumer;
  * Service for handling Microsoft and Minecraft authentication.
  * Provides high-level authentication operations with proper error handling.
  */
-public class AuthenticationService {
+public final class AuthenticationService {
     private final SessionService sessionService;
     private final MicrosoftAuth microsoftAuth;
     private final MinecraftAuth minecraftAuth;
@@ -31,7 +31,6 @@ public class AuthenticationService {
      * @return authentication result
      */
     public AuthenticationResult authenticate(Consumer<String> statusCallback) {
-        // Check if already authenticated
         if (sessionService.isAuthenticated()) {
             return new AuthenticationResult.AlreadyAuthenticated(
                 sessionService.getCurrentProfile().orElseThrow()
@@ -66,7 +65,7 @@ public class AuthenticationService {
         Consumer<String> statusCallback,
         Consumer<AuthenticationResult> resultCallback
     ) {
-        Thread authThread = Thread.ofVirtual().name("auth-thread").start(() -> {
+        Thread ignore = Thread.ofVirtual().name("auth-thread").start(() -> {
             AuthenticationResult result = authenticate(statusCallback);
             resultCallback.accept(result);
         });
@@ -75,18 +74,18 @@ public class AuthenticationService {
     /**
      * Logout from current session.
      *
-     * @return username of logged out user, or null if not authenticated
+     * @return username of logged-out user, or null if not authenticated
      */
     public String logout() {
         if (!sessionService.isAuthenticated()) {
             return null;
         }
 
-        String username = sessionService.getCurrentProfile().map(p -> p.username()).orElse(null);
+        String username = sessionService.getCurrentProfile().map(AuthenticatedProfile::username).orElse(null);
 
         try {
             sessionService.clearSession();
-        } catch (Exception e) {
+        } catch (Exception ignore) {
             // Log but don't fail logout
         }
 

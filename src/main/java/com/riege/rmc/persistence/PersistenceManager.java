@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class PersistenceManager {
+public final class PersistenceManager {
     private static final PersistenceManager INSTANCE = new PersistenceManager();
 
     private final Gson gson;
@@ -37,7 +37,6 @@ public class PersistenceManager {
         return INSTANCE;
     }
 
-    // Profile management
     public Optional<AuthenticatedProfile> loadProfile() {
         if (!Files.exists(profilesFile)) {
             return Optional.empty();
@@ -76,7 +75,6 @@ public class PersistenceManager {
         Files.deleteIfExists(profilesFile);
     }
 
-    // Server favorites management
     public List<ServerFavorite> loadServers() {
         if (!Files.exists(serversFile)) {
             return new ArrayList<>();
@@ -97,13 +95,10 @@ public class PersistenceManager {
         ConfigDirectory.ensureExists();
         List<ServerFavorite> servers = loadServers();
 
-        // Remove existing server with same alias
         servers.removeIf(s -> s.alias().equalsIgnoreCase(server.alias()));
 
-        // Add new server
         servers.add(server);
 
-        // Save
         String json = gson.toJson(servers);
         Files.writeString(serversFile, json);
     }
@@ -140,7 +135,6 @@ public class PersistenceManager {
             .findFirst();
     }
 
-    // Settings management
     public AppSettings loadSettings() {
         if (!Files.exists(settingsFile)) {
             return AppSettings.defaults();

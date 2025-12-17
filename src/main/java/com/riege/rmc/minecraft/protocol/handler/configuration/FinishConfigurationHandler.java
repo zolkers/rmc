@@ -7,7 +7,7 @@ import com.riege.rmc.minecraft.protocol.packets.configuration.FinishConfiguratio
 
 import java.io.IOException;
 
-public class FinishConfigurationHandler implements PacketHandler {
+public final class FinishConfigurationHandler implements PacketHandler {
 
     @Override
     public void handle(MinecraftConnection.PacketData packet, ServerConnection connection) throws IOException {

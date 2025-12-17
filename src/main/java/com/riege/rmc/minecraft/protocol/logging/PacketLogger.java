@@ -7,9 +7,10 @@ import com.riege.rmc.minecraft.protocol.Packet;
 
 import java.util.function.Consumer;
 
-public class PacketLogger {
+public final class PacketLogger {
     private final int verbosityLevel;
     private final Consumer<String> output;
+    private final static int MAX_BYTES = 256;
 
     public PacketLogger(int verbosityLevel, Consumer<String> output) {
         this.verbosityLevel = verbosityLevel;
@@ -49,7 +50,7 @@ public class PacketLogger {
                 hexId, packetName, direction, size, state.name());
         } else {
             String direction = packetInfoOpt.map(p -> p.getDirection().name()).orElse("TO_CLIENT");
-            String hexDump = createHexDump(payload, 256);
+            String hexDump = createHexDump(payload);
             return String.format("[RECV] %s %s %s (%d bytes) [%s]\n%s",
                 hexId, packetName, direction, size, state.name(), hexDump);
         }
@@ -73,9 +74,9 @@ public class PacketLogger {
         }
     }
 
-    private String createHexDump(byte[] data, int maxBytes) {
+    private String createHexDump(byte[] data) {
         StringBuilder sb = new StringBuilder();
-        int length = Math.min(data.length, maxBytes);
+        int length = Math.min(data.length, PacketLogger.MAX_BYTES);
 
         for (int i = 0; i < length; i += 16) {
             sb.append(String.format("  %04X: ", i));
@@ -97,8 +98,8 @@ public class PacketLogger {
             sb.append("\n");
         }
 
-        if (data.length > maxBytes) {
-            sb.append(String.format("  ... (%d more bytes)\n", data.length - maxBytes));
+        if (data.length > PacketLogger.MAX_BYTES) {
+            sb.append(String.format("  ... (%d more bytes)\n", data.length - PacketLogger.MAX_BYTES));
         }
 
         return sb.toString();

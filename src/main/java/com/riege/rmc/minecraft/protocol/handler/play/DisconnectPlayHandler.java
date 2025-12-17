@@ -9,7 +9,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-public class DisconnectPlayHandler implements PacketHandler {
+public final class DisconnectPlayHandler implements PacketHandler {
 
     @Override
     public void handle(MinecraftConnection.PacketData packet, ServerConnection connection) throws IOException {

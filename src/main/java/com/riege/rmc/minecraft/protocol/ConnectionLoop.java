@@ -3,11 +3,12 @@ package com.riege.rmc.minecraft.protocol;
 import com.riege.rmc.minecraft.protocol.packets.MinecraftPacket;
 import com.riege.rmc.minecraft.protocol.handler.PacketHandler;
 import com.riege.rmc.minecraft.protocol.handler.PacketHandlerRegistry;
+import com.riege.rmc.terminal.logging.Logger;
 
 import java.io.IOException;
 import java.util.function.Consumer;
 
-public class ConnectionLoop implements Runnable {
+public final class ConnectionLoop implements Runnable {
     private volatile boolean running = true;
     private final MinecraftConnection connection;
     private final PacketHandlerRegistry registry;
@@ -43,7 +44,7 @@ public class ConnectionLoop implements Runnable {
                 running = false;
             } catch (Exception e) {
                 logger.accept("Handler error: " + e.getMessage());
-                e.printStackTrace();
+                Logger.error(e.getMessage());
             }
         }
         logger.accept("Connection loop terminated");

@@ -6,7 +6,7 @@ import com.riege.rmc.minecraft.protocol.PacketBuffer;
 
 import java.io.IOException;
 
-public class FinishConfigurationPacket implements Packet {
+public final class FinishConfigurationPacket implements Packet {
 
     public FinishConfigurationPacket() {
     }

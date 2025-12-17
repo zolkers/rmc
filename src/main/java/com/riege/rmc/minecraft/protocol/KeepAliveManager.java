@@ -1,6 +1,6 @@
 package com.riege.rmc.minecraft.protocol;
 
-public class KeepAliveManager {
+public final class KeepAliveManager {
     private long lastKeepAliveId;
     private long lastReceivedTime;
     private final int timeoutSeconds;

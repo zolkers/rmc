@@ -5,7 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class ConfigDirectory {
+public final class ConfigDirectory {
 
     public static Path getConfigPath() {
         String os = System.getProperty("os.name").toLowerCase();
@@ -20,7 +20,6 @@ public class ConfigDirectory {
         } else if (os.contains("mac")) {
             return Paths.get(home, "Library", "Application Support", "rmc");
         } else {
-            // Linux and other Unix-like systems
             String xdgConfigHome = System.getenv("XDG_CONFIG_HOME");
             if (xdgConfigHome != null) {
                 return Paths.get(xdgConfigHome, "rmc");

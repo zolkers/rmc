@@ -10,7 +10,7 @@ import java.io.IOException;
  * Response to server's known packs request.
  * Packet ID: 0x07 in CONFIGURATION state (Client to Server)
  */
-public class KnownPacksPacket implements Packet {
+public final class KnownPacksPacket implements Packet {
 
     @Override
     public MinecraftPacket getPacketType() {

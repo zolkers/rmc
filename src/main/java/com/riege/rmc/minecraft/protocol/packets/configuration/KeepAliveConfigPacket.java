@@ -6,7 +6,7 @@ import com.riege.rmc.minecraft.protocol.PacketBuffer;
 
 import java.io.IOException;
 
-public class KeepAliveConfigPacket implements Packet {
+public final class KeepAliveConfigPacket implements Packet {
     private final long keepAliveId;
 
     public KeepAliveConfigPacket(long keepAliveId) {
