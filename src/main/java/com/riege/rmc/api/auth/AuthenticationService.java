@@ -39,15 +39,12 @@ public class AuthenticationService {
         }
 
         try {
-            // Step 1: Microsoft OAuth
             statusCallback.accept("Starting Microsoft authentication...");
             MicrosoftToken msToken = microsoftAuth.authenticate(statusCallback);
 
-            // Step 2: Minecraft authentication
             statusCallback.accept("Authenticating with Minecraft services...");
             AuthenticatedProfile profile = minecraftAuth.authenticateWithMicrosoft(msToken);
 
-            // Step 3: Save session
             sessionService.setProfile(profile);
 
             return new AuthenticationResult.Success(profile);

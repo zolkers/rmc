@@ -32,7 +32,6 @@ public class ConnectionService {
         int verbosity,
         Consumer<String> statusCallback
     ) {
-        // Check authentication
         Optional<AuthenticatedProfile> profileOpt = sessionService.getCurrentProfile();
         if (profileOpt.isEmpty()) {
             return new ConnectionResult.NotAuthenticated();
@@ -43,17 +42,14 @@ public class ConnectionService {
         try {
             statusCallback.accept("Connecting to " + serverAddress + "...");
 
-            // Create connection
             ServerConnection connection = new ServerConnection(
                 serverAddress,
                 statusCallback,
                 verbosity
             );
 
-            // Attempt connection
             connection.connect(profile);
 
-            // Store current connection
             this.currentConnection = connection;
 
             return new ConnectionResult.Success(serverAddress, profile.username());

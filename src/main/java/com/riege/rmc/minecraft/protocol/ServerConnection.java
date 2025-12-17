@@ -55,6 +55,8 @@ public final class ServerConnection {
             0x04, new com.riege.rmc.minecraft.protocol.handler.configuration.KeepAliveConfigHandler());
         handlerRegistry.register(ConnectionState.CONFIGURATION, MinecraftPacket.Direction.TO_CLIENT,
             0x03, new com.riege.rmc.minecraft.protocol.handler.configuration.FinishConfigurationHandler());
+        handlerRegistry.register(ConnectionState.CONFIGURATION, MinecraftPacket.Direction.TO_CLIENT,
+            0x0E, new com.riege.rmc.minecraft.protocol.handler.configuration.KnownPacksHandler());
 
         // Play state handlers
         handlerRegistry.register(ConnectionState.PLAY, MinecraftPacket.Direction.TO_CLIENT,
@@ -170,6 +172,12 @@ public final class ServerConnection {
         LoginAcknowledgedPacket loginAck = new LoginAcknowledgedPacket();
         connection.sendPacket(loginAck);
         logger.accept("→ CONFIGURATION state");
+
+        // Send client information
+        com.riege.rmc.minecraft.protocol.packets.configuration.ClientInformationPacket clientInfo =
+            new com.riege.rmc.minecraft.protocol.packets.configuration.ClientInformationPacket();
+        connection.sendPacket(clientInfo);
+        logger.accept("Sent client information");
 
         keepAliveManager = new KeepAliveManager(30);
 

@@ -13,11 +13,9 @@ public class FinishConfigurationHandler implements PacketHandler {
     public void handle(MinecraftConnection.PacketData packet, ServerConnection connection) throws IOException {
         connection.getLogger().accept("Configuration complete, acknowledging...");
 
-        // Send acknowledgment
         FinishConfigurationPacket ack = new FinishConfigurationPacket();
         connection.getConnection().sendPacket(ack);
 
-        // Transition to PLAY state
         connection.transitionToPlay();
     }
 }
