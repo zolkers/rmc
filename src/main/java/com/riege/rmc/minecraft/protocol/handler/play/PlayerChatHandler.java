@@ -71,19 +71,45 @@ public final class PlayerChatHandler implements PacketHandler {
 
     private String extractTextFromJson(String json) {
         try {
-            if (json.contains("\"text\"")) {
-                int start = json.indexOf("\"text\":\"") + 8;
-                int end = json.indexOf("\"", start);
-                if (start > 7 && end > start) {
-                    return json.substring(start, end);
-                }
-            }
-            if (json.startsWith("\"") && json.endsWith("\"")) {
-                return json.substring(1, json.length() - 1);
-            }
-            return json;
+            com.google.gson.JsonElement element = com.google.gson.JsonParser.parseString(json);
+            return extractTextRecursive(element);
         } catch (Exception e) {
             return json;
         }
+    }
+
+    private String extractTextRecursive(com.google.gson.JsonElement element) {
+        StringBuilder result = new StringBuilder();
+
+        if (element.isJsonPrimitive()) {
+            result.append(element.getAsString());
+        } else if (element.isJsonObject()) {
+            com.google.gson.JsonObject obj = element.getAsJsonObject();
+
+            if (obj.has("text")) {
+                result.append(obj.get("text").getAsString());
+            }
+
+            if (obj.has("extra")) {
+                com.google.gson.JsonArray extra = obj.getAsJsonArray("extra");
+                for (com.google.gson.JsonElement child : extra) {
+                    result.append(extractTextRecursive(child));
+                }
+            }
+
+            if (obj.has("with")) {
+                com.google.gson.JsonArray with = obj.getAsJsonArray("with");
+                for (com.google.gson.JsonElement child : with) {
+                    result.append(extractTextRecursive(child));
+                }
+            }
+        } else if (element.isJsonArray()) {
+            com.google.gson.JsonArray array = element.getAsJsonArray();
+            for (com.google.gson.JsonElement child : array) {
+                result.append(extractTextRecursive(child));
+            }
+        }
+
+        return result.toString();
     }
 }
