@@ -12,10 +12,7 @@ import java.net.URI;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Modern terminal view with sleek design and smooth animations.
- */
-public class TerminalView extends JFrame {
+public final class TerminalView extends JFrame {
 
     private final JTextPane textPane;
     private final JTextField inputField;
@@ -35,21 +32,17 @@ public class TerminalView extends JFrame {
         setMinimumSize(new Dimension(800, 600));
         setAutoRequestFocus(true);
 
-        // Main container with BorderLayout
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(TerminalTheme.BACKGROUND_PRIMARY);
         setContentPane(mainPanel);
 
-        // Create header
         JPanel header = createHeader();
         mainPanel.add(header, BorderLayout.NORTH);
 
-        // Create text pane
         textPane = createTextPane(document);
         ScrollPane scrollPane = new ScrollPane(textPane);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Create input field - SIMPLE VERSION THAT WORKS
         inputField = new JTextField();
         inputField.setBackground(TerminalTheme.BACKGROUND_SECONDARY);
         inputField.setForeground(TerminalTheme.TEXT_PRIMARY);
@@ -61,24 +54,18 @@ public class TerminalView extends JFrame {
         ));
         mainPanel.add(inputField, BorderLayout.SOUTH);
 
-        // Create status bar
         statusBar = createStatusBar();
         mainPanel.add(statusBar, BorderLayout.PAGE_END);
 
         setLocationRelativeTo(null);
     }
 
-    /**
-     * Show the window and ensure input field gets focus.
-     */
     @Override
     public void setVisible(boolean visible) {
         super.setVisible(visible);
         if (visible) {
-            // Force focus to input field when window becomes visible
             SwingUtilities.invokeLater(() -> {
                 inputField.requestFocusInWindow();
-                // Set as default component to receive focus
                 getRootPane().setDefaultButton(null);
             });
         }
@@ -117,7 +104,6 @@ public class TerminalView extends JFrame {
             TerminalTheme.PADDING_MEDIUM
         ));
 
-        // Click handler for links
         pane.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -125,7 +111,6 @@ public class TerminalView extends JFrame {
             }
         });
 
-        // Hover cursor for links
         pane.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -174,7 +159,6 @@ public class TerminalView extends JFrame {
             try {
                 StyledDocument doc = textPane.getStyledDocument();
 
-                // Trim old lines if needed
                 if (currentLineCount >= MAX_LINES) {
                     int firstLineEnd = doc.getText(0, doc.getLength()).indexOf('\n');
                     if (firstLineEnd > 0) {
@@ -183,7 +167,6 @@ public class TerminalView extends JFrame {
                     }
                 }
 
-                // Process text for links
                 Matcher matcher = URL_PATTERN.matcher(text);
                 int lastEnd = 0;
 
@@ -191,14 +174,12 @@ public class TerminalView extends JFrame {
                     int start = matcher.start();
                     int end = matcher.end();
 
-                    // Add text before link
                     if (start > lastEnd) {
                         SimpleAttributeSet attrs = new SimpleAttributeSet();
                         StyleConstants.setForeground(attrs, color);
                         doc.insertString(doc.getLength(), text.substring(lastEnd, start), attrs);
                     }
 
-                    // Add link
                     SimpleAttributeSet linkAttrs = new SimpleAttributeSet();
                     StyleConstants.setForeground(linkAttrs, TerminalTheme.LINK_DEFAULT);
                     StyleConstants.setUnderline(linkAttrs, true);
@@ -208,18 +189,15 @@ public class TerminalView extends JFrame {
                     lastEnd = end;
                 }
 
-                // Add remaining text
                 if (lastEnd < text.length()) {
                     SimpleAttributeSet attrs = new SimpleAttributeSet();
                     StyleConstants.setForeground(attrs, color);
                     doc.insertString(doc.getLength(), text.substring(lastEnd), attrs);
                 }
 
-                // Add newline
                 doc.insertString(doc.getLength(), "\n", null);
                 currentLineCount++;
 
-                // Auto-scroll to bottom
                 textPane.setCaretPosition(doc.getLength());
 
             } catch (BadLocationException e) {

@@ -10,7 +10,7 @@ import java.io.IOException;
  * Response to server's ping request.
  * Packet ID: 0x05 in CONFIGURATION state (Client to Server)
  */
-public class PongConfigPacket implements Packet {
+public final class PongConfigPacket implements Packet {
 
     private final int id;
 

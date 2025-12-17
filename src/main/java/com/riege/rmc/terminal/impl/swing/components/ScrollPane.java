@@ -6,10 +6,7 @@ import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
 
-/**
- * Modern-styled scroll pane with thin, sleek scrollbars.
- */
-public class ScrollPane extends JScrollPane {
+public final class ScrollPane extends JScrollPane {
 
     public ScrollPane(Component view) {
         super(view);
@@ -17,13 +14,11 @@ public class ScrollPane extends JScrollPane {
         setBorder(BorderFactory.createEmptyBorder());
         getViewport().setOpaque(false);
 
-        // Style vertical scrollbar
         JScrollBar vertical = getVerticalScrollBar();
         vertical.setUI(new ModernScrollBarUI());
         vertical.setOpaque(false);
         vertical.setPreferredSize(new Dimension(10, 0));
 
-        // Style horizontal scrollbar
         JScrollBar horizontal = getHorizontalScrollBar();
         horizontal.setUI(new ModernScrollBarUI());
         horizontal.setOpaque(false);

@@ -1,5 +1,6 @@
 package com.riege.rmc.api.connection;
 
+import com.riege.rmc.api.chat.ChatService;
 import com.riege.rmc.api.session.SessionService;
 import com.riege.rmc.minecraft.microsoft.AuthenticatedProfile;
 import com.riege.rmc.minecraft.protocol.ServerConnection;
@@ -13,10 +14,12 @@ import java.util.function.Consumer;
  */
 public final class ConnectionService {
     private final SessionService sessionService;
+    private final ChatService chatService;
     private ServerConnection currentConnection;
 
-    public ConnectionService(SessionService sessionService) {
+    public ConnectionService(SessionService sessionService, ChatService chatService) {
         this.sessionService = sessionService;
+        this.chatService = chatService;
     }
 
     /**
@@ -68,7 +71,8 @@ public final class ConnectionService {
             ServerConnection connection = new ServerConnection(
                 serverAddress,
                 statusCallback,
-                verbosity
+                verbosity,
+                chatService
             );
 
             connection.connect(profile);
@@ -88,6 +92,11 @@ public final class ConnectionService {
             }
 
             this.currentConnection = connection;
+
+            // Set the active connection in ChatService
+            if (chatService != null) {
+                chatService.setConnection(connection);
+            }
 
             return new ConnectionResult.Success(serverAddress, profile.username());
 
@@ -124,6 +133,11 @@ public final class ConnectionService {
         if (currentConnection != null) {
             currentConnection.disconnect();
             currentConnection = null;
+
+            // Clear connection from ChatService
+            if (chatService != null) {
+                chatService.setConnection(null);
+            }
         }
     }
 

@@ -22,7 +22,6 @@ public class Main {
     public static void main(String[] args) {
         Logger.initialize();
 
-        // Initialize RMC API (loads persisted profile)
         RMCApi api = RMCApi.getInstance();
         api.initialize();
 

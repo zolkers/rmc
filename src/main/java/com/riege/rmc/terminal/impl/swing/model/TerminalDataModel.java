@@ -5,10 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Data model for the terminal.
- * Stores document, candidates, and other state.
- */
 public class TerminalDataModel {
 
     private final StyledDocument document;

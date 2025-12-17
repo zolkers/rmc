@@ -4,7 +4,7 @@ import com.riege.rmc.platform.SystemInfo;
 import com.riege.rmc.terminal.impl.JnaRTerminal;
 import com.riege.rmc.terminal.impl.SwingTerminal;
 
-public class TerminalFactory {
+public final class TerminalFactory {
 
     public static Terminal create() {
         if (SystemInfo.isLinux()) {

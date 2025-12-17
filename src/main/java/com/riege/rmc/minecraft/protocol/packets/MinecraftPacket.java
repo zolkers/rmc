@@ -259,6 +259,8 @@ public enum MinecraftPacket {
     PING_START_S(0x00, "ping_start", Direction.TO_SERVER, State.STATUS),
     PING_STATUS_S(0x01, "ping", Direction.TO_SERVER, State.STATUS);
 
+    public static final int PROTOCOL_VERSION = 769;
+
     private final int packetId;
     private final String packetName;
     private final Direction direction;
@@ -283,7 +285,7 @@ public enum MinecraftPacket {
         return packetName;
     }
 
-    @Deprecated
+    @Deprecated(since = "1.21.4")
     public String getPacketName() {
         return this.getName();
     }

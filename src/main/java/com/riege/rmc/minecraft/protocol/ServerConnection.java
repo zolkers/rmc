@@ -1,5 +1,6 @@
 package com.riege.rmc.minecraft.protocol;
 
+import com.riege.rmc.api.chat.ChatService;
 import com.riege.rmc.minecraft.microsoft.AuthenticatedProfile;
 import com.riege.rmc.minecraft.protocol.handler.configuration.*;
 import com.riege.rmc.minecraft.protocol.handler.play.*;
@@ -11,6 +12,7 @@ import com.riege.rmc.minecraft.protocol.packets.handshaking.HandshakePacket;
 import com.riege.rmc.minecraft.protocol.packets.login.EncryptionResponsePacket;
 import com.riege.rmc.minecraft.protocol.packets.login.LoginAcknowledgedPacket;
 import com.riege.rmc.minecraft.protocol.packets.login.LoginStartPacket;
+import com.riege.rmc.minecraft.protocol.packets.play.ChatMessagePacket;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -28,13 +30,19 @@ public final class ServerConnection {
     private volatile ConnectionLoop connectionLoop;
     private String transferHost;
     private int transferPort;
+    private ChatService chatService;
 
     public ServerConnection(String address, Consumer<String> logger) {
         this(address, logger, 0);
     }
 
     public ServerConnection(String address, Consumer<String> logger, int verbosity) {
+        this(address, logger, verbosity, null);
+    }
+
+    public ServerConnection(String address, Consumer<String> logger, int verbosity, ChatService chatService) {
         this.logger = logger;
+        this.chatService = chatService;
         String[] parts = parseAddress(address);
         this.host = parts[0];
         this.port = Integer.parseInt(parts[1]);
@@ -326,5 +334,25 @@ public final class ServerConnection {
 
     public boolean hasTransferTarget() {
         return transferHost != null;
+    }
+
+    public boolean isConnected() {
+        return connection != null && connection.isConnected();
+    }
+
+    public void sendChatMessage(String message) throws IOException {
+        if (!isConnected()) {
+            throw new IllegalStateException("Not connected to a server");
+        }
+        ChatMessagePacket packet = new ChatMessagePacket(message);
+        connection.sendPacket(packet);
+    }
+
+    public ChatService getChatService() {
+        return chatService;
+    }
+
+    public void setChatService(ChatService chatService) {
+        this.chatService = chatService;
     }
 }

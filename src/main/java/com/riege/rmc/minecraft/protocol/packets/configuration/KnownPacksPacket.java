@@ -20,6 +20,6 @@ public final class KnownPacksPacket implements Packet {
     @Override
     public void write(PacketBuffer buffer) throws IOException {
         // Send empty list - we don't have any known packs
-        buffer.writeVarInt(0); // Array length = 0
+        buffer.writeVarInt(0);
     }
 }

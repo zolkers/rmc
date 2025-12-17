@@ -1,6 +1,7 @@
 package com.riege.rmc.api;
 
 import com.riege.rmc.api.auth.AuthenticationService;
+import com.riege.rmc.api.chat.ChatService;
 import com.riege.rmc.api.connection.ConnectionService;
 import com.riege.rmc.api.session.SessionService;
 
@@ -37,6 +38,12 @@ import com.riege.rmc.api.session.SessionService;
  * // Session info
  * SessionInfo info = api.session().getSessionInfo();
  * System.out.println("User: " + info.username());
+ *
+ * // Chat
+ * api.chat().addListener(message -> {
+ *     System.out.println(message.format());
+ * });
+ * api.chat().sendMessage("Hello, world!");
  * }</pre>
  */
 public final class RMCApi {
@@ -45,11 +52,13 @@ public final class RMCApi {
     private final SessionService sessionService;
     private final AuthenticationService authService;
     private final ConnectionService connectionService;
+    private final ChatService chatService;
 
     private RMCApi() {
         this.sessionService = new SessionService();
+        this.chatService = new ChatService();
         this.authService = new AuthenticationService(sessionService);
-        this.connectionService = new ConnectionService(sessionService);
+        this.connectionService = new ConnectionService(sessionService, chatService);
     }
 
     /**
@@ -78,6 +87,13 @@ public final class RMCApi {
      */
     public SessionService session() {
         return sessionService;
+    }
+
+    /**
+     * Access chat operations.
+     */
+    public ChatService chat() {
+        return chatService;
     }
 
     /**
